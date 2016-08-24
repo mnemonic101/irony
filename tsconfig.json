@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "target": "ES5",
+        "module": "commonjs",
+        "removeComments": true,
+        "moduleResolution": "node",
+        "outDir": "lib/",
+        "sourceMap": true
+    }
+}
