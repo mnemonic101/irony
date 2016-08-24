@@ -8,6 +8,15 @@ import {JsonObject, JsonMember} from "typedjson";
 // TODO: wrap with @ProvidedByJson
 export class Package {
 
+  private _srcFile: string;
+  public get srcFile(): string {
+    return this._srcFile;
+  }
+  private _srcFolder: string;
+  public get srcFolder(): string {
+    return this._srcFolder;
+  }
+
   private _name: string;
   public get name(): string {
     return this._name;

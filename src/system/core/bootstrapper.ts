@@ -1,4 +1,5 @@
 import {Container} from "../core/factory";
+import {FileSystemHelper} from "../core/helper";
 
 import {RouteRegistrar} from "../router/registrar";
 
@@ -45,14 +46,14 @@ export abstract class Bootstrapper {
 
   private registerAdapter(typeOfAdapter: Function, name?: string): void {
 
-    let modulePath = this.resolveAbsolutePath("../adapter", name);
+    let modulePath = this.resolveAbsolutePath("/adapter", name);
     let module: any = require(modulePath);
     Container.bind(typeOfAdapter).to(module.Adapter);
   }
 
   private registerControllers(): void {
 
-    let pathToControllers: string = "../../controller";
+    let pathToControllers: string = "/controller";
     this.resolveModules(pathToControllers);
   }
 
@@ -60,8 +61,7 @@ export abstract class Bootstrapper {
 
     let fullModulePath: string = this.resolveAbsolutePath(pathFragment, "");
 
-    let fileStatus: fs.Stats = fs.statSync(fullModulePath);
-    if (fileStatus.isDirectory()) {
+    if (FileSystemHelper.isFolder(fullModulePath)) {
 
       let filenamesInFolder: Array<string> = fs.readdirSync(fullModulePath);
       for (let filename of filenamesInFolder) {
@@ -78,12 +78,30 @@ export abstract class Bootstrapper {
 
   private resolveAbsolutePath(path: string, filename: string): string {
 
+    // TODO: Improve the resolution of dynamic module binding!
+    // TODO: Create a strategy to search folders!
     if (path.indexOf(this.config.settings.basePath) === -1) {
-      path = __dirname + "/" + path;
+      let newPath = this.config.appBasePath + "/" + path;
+
+      if (!FileSystemHelper.fileOrFolderExists(newPath)) {
+        newPath = this.config.appBasePath + "/system/" + path;
+
+        if (!FileSystemHelper.fileOrFolderExists(newPath)) {
+          newPath = this.config.coreBasePath + "/" + path;
+
+          if (!FileSystemHelper.fileOrFolderExists(newPath)) {
+            newPath = this.config.coreBasePath + "/system/" + path;
+
+            if (!FileSystemHelper.fileOrFolderExists(newPath)) {
+              throw new Error("Path could not be determined. Path [" + path + "], File [" + filename + "].");
+            }
+          }
+        }
+      }
+      path = newPath;
     }
 
-    let tempPath: string = path + "/" + filename;
-    let absoluteFilePath: string = fs.realpathSync(tempPath);
+    let absoluteFilePath: string = fs.realpathSync(path + "/" + filename);
     return absoluteFilePath;
   }
 
