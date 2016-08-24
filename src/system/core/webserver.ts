@@ -9,7 +9,7 @@ import {Configuration} from "../config/configuration";
 
 import * as fs from "fs";
 
-export abstract class Bootstrapper {
+export abstract class WebServer {
 
   private _context: Context;
   public get context(): Context {
