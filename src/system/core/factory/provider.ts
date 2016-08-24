@@ -23,9 +23,8 @@ export class ConfigurationProvider implements Provider {
 
     let config: any = TypedJSON.parse(configJson.toString(), this.type);
 
-    // HACK 
-    config["_srcFolder"] = FileSystemHelper.locateFolderOf(name);
-    config["_srcFile"] = config._srcFolder + "/" + name;
+    // HACK: We need to know where we are somehow?!
+    config["_srcFile"] = FileSystemHelper.locateFolderOf(name) + "/" + name;
 
     return config;
   }

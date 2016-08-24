@@ -1,5 +1,6 @@
 import {AutoWired, Inject, Singleton} from "../core/factory";
 import {FileSystemHelper} from "../core/helper";
+import * as path from "path";
 
 import {Package} from "../config/package";
 import {Settings} from "../config/settings";
@@ -37,7 +38,10 @@ export class Configuration {
 
   private checkBasePath(): void {
     this._coreBasePath = FileSystemHelper.locateFolderOf(this.settings.basePath, false);
-    this._appBasePath = this.package.srcFolder + this.settings.basePath;
+
+    // HACK: We need to know where we are somehow?!
+    // TODO: Find a better way to resolve the applications base path! 
+    this._appBasePath = path.posix.parse(this.package.srcFile).dir + this.settings.basePath;
 
     // TODO: check if base path is given in settings.json or package.json,
     //       and if it is correct!  
