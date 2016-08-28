@@ -1,4 +1,4 @@
-export abstract class ControllerBase {
+export abstract class Controller {
 
   private _request : any;
   public get request(): any {
