@@ -1,4 +1,5 @@
 import {HttpVerb, ParamType} from "../router/enums";
+import {RouteHandler} from "../router/handler";
 
 export class RouteArea {
   public targetClass: Function;
@@ -23,22 +24,6 @@ export class RouteArea {
   public hasProperties(): boolean {
     return (this.properties && this.properties.length > 0);
   }
-}
-
-export class RouteHandler {
-  public name: string;
-  public path: string;
-  public resolvedPath: string;
-  public httpVerb: HttpVerb;
-  public parameters: Array<MethodParam> = new Array<MethodParam>();
-  public mustParseCookies: boolean = false;
-  public files: Array<FileParam> = new Array<FileParam>();
-  public mustParseBody: boolean = false;
-  public mustParseForms: boolean = false;
-  public languages: Array<string>;
-  public accepts: Array<string>;
-  public resolvedLanguages: Array<string>;
-  public resolvedAccepts: Array<string>;
 }
 
 export class FileParam {
