@@ -26,6 +26,7 @@ var tsProjectForDts = tsc.createProject("tsconfig.json");
 gulp.task("build-js", function () {
   return gulp.src([
     "./**/**.ts",
+    "!./spec/**",
     "!./lib/**",
     "!./node_modules/**"
   ])
@@ -45,6 +46,7 @@ gulp.task("build-js", function () {
 gulp.task("build-dts", function () {
   return gulp.src([
     "./**/**.ts",
+    "!./spec/**",
     "!./lib/**",
     "!./node_modules/**"
   ])
@@ -80,12 +82,34 @@ gulp.task("copy", function () {
   ])
     .pipe(gulp.dest("lib/src"));
 });
+
 gulp.task("build", function (cb) {
   return runSequence(
     "clean-all",
     ["build-js", "build-dts", "copy", "build-package.json"],
     cb
   );
+});
+
+gulp.task("build-spec", function (cb) {
+  return gulp.src([
+    "./**/**.ts",
+    "!./src/**",
+    "!./lib/**",
+    "!./node_modules/**"
+  ])
+    .pipe(sourcemaps.init())
+    .pipe(tsc(tsProjectForJs))
+    .js
+    .pipe(sourcemaps.write("../maps", {
+      includeContent: false,
+      sourceRoot: function (file) {
+        // needed to fix relative path in sourceMaps
+        var path = "../".repeat((file.relative.match(/\//g) || []).length + 1);
+        return path;
+      }
+    }))
+    .pipe(gulp.dest("lib"));
 });
 
 gulp.task("tests", ["build-spec"], function () {
