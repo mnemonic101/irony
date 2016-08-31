@@ -6,16 +6,14 @@ export class FileSystemHelper {
   public static locateFolderOf(pathSegemnt: string, relocate: boolean = true, startpath: string = "", searchUp: boolean = true): string {
     if (!searchUp) { throw new Error("Traversing down the path to locate a file is not supported yet!"); }
 
-    startpath = path.posix.resolve(startpath || __dirname);
+    startpath = path.posix.resolve(startpath || process.cwd());
     if (startpath.indexOf("/") === 0) { startpath = startpath.substr(1); }
 
     let pathSegments: string[] = startpath.split("/");
 
     if (relocate) {
-      let index = pathSegments.indexOf("node_modules");
-      if (index > 0) {
-        pathSegments.splice(index, 2);
-      }
+      pathSegments.push("lib");
+      pathSegments.push("src");
     }
 
     let resolvedPath = "";

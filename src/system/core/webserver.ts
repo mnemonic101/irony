@@ -65,11 +65,13 @@ export abstract class WebServer {
 
       let filenamesInFolder: Array<string> = fs.readdirSync(fullModulePath);
       for (let filename of filenamesInFolder) {
-        let fullFilePath: string = this.resolveAbsolutePath(fullModulePath, filename);
-        console.log(fullFilePath);
+        if (filename.match(/[^\.]*\.js$/i)) {
+          let fullFilePath: string = this.resolveAbsolutePath(fullModulePath, filename);
+          console.log(fullFilePath);
 
-        let module = require(fullFilePath);
-        console.log(module);
+          let module = require(fullFilePath);
+          console.log(module);
+        }
       }
     } else {
       throw new Error("Modules could not be resolved by path. Path does not exists [" + pathFragment + "].");

@@ -37,11 +37,8 @@ export class Configuration {
   }
 
   private checkBasePath(): void {
-    this._coreBasePath = FileSystemHelper.locateFolderOf(this.settings.basePath, false);
-
-    // HACK: We need to know where we are somehow?!
-    // TODO: Find a better way to resolve the applications base path! 
-    this._appBasePath = path.posix.parse(this.package.srcFile).dir + this.settings.basePath;
+    this._coreBasePath = FileSystemHelper.locateFolderOf("system", false, __dirname);
+    this._appBasePath = process.cwd() + this.settings.basePath;
 
     // TODO: check if base path is given in settings.json or package.json,
     //       and if it is correct!  
