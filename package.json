@@ -1,7 +1,7 @@
 {
   "name": "typescript-mvc",
   "description": "A simple MVC Web API Framework for TypeScript",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "codemonic.net <info@codemonic.net>",
   "repository": {
     "type": "git",
