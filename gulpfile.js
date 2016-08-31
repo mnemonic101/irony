@@ -88,7 +88,7 @@ gulp.task("build", function (cb) {
   );
 });
 
-gulp.task("tests", ["build"], function () {
+gulp.task("tests", ["build-spec"], function () {
   return gulp.src("./")
     .pipe(jasmine({ config: require("./spec/support/jasmine.json"), includeStackTrace: true, verbose: true }));
 });
