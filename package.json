@@ -20,11 +20,12 @@
     "gulp-tslint": "^6.0.1",
     "gulp-typescript": "^2.13.6",
     "reflect-metadata": "^0.1.3",
+    "run-sequence": "^1.2.2",
     "tslint": "^3.13.0",
     "typescript": "^1.8.10"
   },
   "main": "lib/src/system/index.js",
-  "typings": "src/system/index.ts",  
+  "typings": "src/system/index.ts",
   "directories": {
     "doc": "doc",
     "lib": "lib/src"

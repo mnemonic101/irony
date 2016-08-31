@@ -1,6 +1,8 @@
 "use strict";
 var fs = require('fs');
+var path = require('path');
 var gulp = require('gulp'),
+  runSequence = require('run-sequence'),
   del = require('del'),
   jasmine = require('gulp-jasmine'),
   tslint = require('gulp-tslint'),
@@ -50,8 +52,8 @@ gulp.task('build-dts', function () {
     .dts
     .pipe(gulp.dest('lib'));
 })
-gulp.task('build-package.json', function (cb) {
-  var appPackageJson = JSON.parse(fs.readFileSync(process.cwd() + '/package.json', 'utf8'));
+gulp.task('build-package.json', function () {
+  var appPackageJson = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
   var npmPackageJson = {
     "name": appPackageJson.name,
     "description": appPackageJson.description,
@@ -65,7 +67,9 @@ gulp.task('build-package.json', function (cb) {
     "license": appPackageJson.license,
     "bugs": appPackageJson.bugs
   }
-  fs.writeFile('lib/src/package.json', JSON.stringify(npmPackageJson, null, 2), cb);
+  fs.mkdirSync(path.join(__dirname, 'lib'));
+  fs.mkdirSync(path.join(__dirname, 'lib', 'src'));
+  fs.writeFileSync(path.join(__dirname, 'lib', 'src', 'package.json'), JSON.stringify(npmPackageJson, null, 2));
 });
 
 gulp.task('copy', function () {
@@ -74,7 +78,13 @@ gulp.task('copy', function () {
   ])
     .pipe(gulp.dest('lib'));
 });
-gulp.task('build', ['build-js', 'build-dts', 'build-package.json', 'copy']);
+gulp.task('build', function (cb) {
+  return runSequence(
+    'clean-all',
+    ['build-js', 'build-dts', 'copy', 'build-package.json'],
+    cb
+  );
+});
 
 gulp.task('tests', ['build'], function () {
   return gulp.src('./')
