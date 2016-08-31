@@ -1,7 +1,7 @@
 {
   "name": "typescript-mvc",
   "description": "A simple MVC Web API Framework for TypeScript",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "codemonic.net <info@codemonic.net>",
   "repository": {
     "type": "git",
@@ -34,9 +34,11 @@
     "test": "gulp specs",
     "build": "gulp build",
     "publish-patch": "gulp publish-patch",
+    "publish-minor": "gulp publish-minor",
+    "publish-major": "gulp publish-major",
     "preversion": "npm test",
     "version": "npm run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "gitx push && gitx push --tags"
   },
   "keywords": [
     "TypeScript",
