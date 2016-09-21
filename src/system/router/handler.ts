@@ -47,49 +47,49 @@ export class RouteHandler {
     this.sendValue(result, this.context.response, this.context.next);
   }
 
-  private sendValue(value: any, res: any/*express.Response*/, next: any/*express.NextFunction*/): void {
+  private sendValue(value: any, response: any/*express.Response*/, next: any/*express.NextFunction*/): void {
     switch (typeof value) {
       case "number":
-        res.send(value.toString());
+        response.send(value.toString());
         break;
       case "string":
-        res.send(value);
+        response.send(value);
         break;
       case "boolean":
-        res.send(value.toString());
+        response.send(value.toString());
         break;
       case "undefined":
-        if (!res.headersSent) {
-          res.sendStatus(204);
+        if (!response.headersSent) {
+          response.sendStatus(204);
         }
         break;
+      case "object":
+        let isHandled = false;
+        switch (value.constructor.name) {
+          case "ResponseData":
+            response.writeHeader(value.code, value.headers);
+            response.end(value.body);
+            isHandled = true;
+            break;
+          default:
+            // Fall Through
+        }
+        if (isHandled) break;
       default:
         if (value.location && value instanceof ReferencedResource) {
-          res.set("Location", value.location);
-          res.sendStatus(value.statusCode);
-        }
-        /*else if (value.then && value instanceof Promise) {
-        let self = this;
-        value.then(function(val) {
-        self.sendValue(val, res, next);
-        }).catch(function(err) {
-        next(err);
-        });
-        }*/
-        else if (value.body) {
-          res.writeHeader(value.code, value.headers);
-          res.end(value.body);
+          response.set("Location", value.location);
+          response.sendStatus(value.statusCode);
         }
         else if (value.promise) {
           let self = this;
-          value.promise.then(function (val) {
-            self.sendValue(val, res, next);
+          value.promise.then(function (data) {
+            self.sendValue(data, response, next);
           }).catch(function (err) {
             next(err);
           });
         }
         else {
-          res.json(value);
+          response.json(value);
         }
     }
   }

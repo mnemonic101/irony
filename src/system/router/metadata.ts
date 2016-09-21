@@ -1,8 +1,6 @@
 import {ParamType} from "../router/enums";
 import {RouteHandler} from "../router/handler";
 
-import {Promise} from "es6-promise";
-
 export class RouteArea {
   public targetClass: Function;
   public path: string;
@@ -46,12 +44,7 @@ export class MethodParam {
 export class ResponseData {
   public body: string;
   public code: number;
-  public headers: { [id: string]: string };
-}
-
-export interface IActionResult<T> {
-  promise: Promise<T>;
-  data: T;
+  public headers: { [id: string]: string } = {};
 }
 
 export class RequestContext {
