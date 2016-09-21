@@ -8,6 +8,7 @@
     "url": "https://github.com/mnemonic101/typescript-mvc.git"
   },
   "dependencies": {
+    "es6-promise": "^3.3.1",
     "express": "^4.14.0",
     "typedjson": "^0.1.5",
     "typescript-ioc": "^0.2.3"
@@ -25,7 +26,7 @@
     "typescript": "^1.8.10"
   },
   "main": "lib/src/system/index.js",
-  "typings": "src/system/index.ts",
+  "typings": "lib/typings/src/system/index.d.ts",
   "directories": {
     "doc": "doc",
     "lib": "lib/src"

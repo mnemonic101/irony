@@ -33,7 +33,7 @@ gulp.task("build-js", function () {
     .pipe(sourcemaps.init())
     .pipe(tsc(tsProjectForJs))
     .js
-    .pipe(sourcemaps.write("../maps", {
+    .pipe(sourcemaps.write("maps", {
       includeContent: false,
       sourceRoot: function (file) {
         // needed to fix relative path in sourceMaps
@@ -52,7 +52,7 @@ gulp.task("build-dts", function () {
   ])
     .pipe(tsc(tsProjectForDts))
     .dts
-    .pipe(gulp.dest("lib"));
+    .pipe(gulp.dest("lib/typings"));
 })
 gulp.task("build-package.json", function () {
   var appPackageJson = JSON.parse(fs.readFileSync(__dirname + "/package.json", "utf8"));

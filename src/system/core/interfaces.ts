@@ -25,3 +25,22 @@ export abstract class IFramework {
   public router: IRouter;
   public abstract startWebServer(port: number, hostname: string, callback?: Function): http.Server;
 }
+
+export abstract class ITask {
+  public execute(cb: TaskFinishedHandler): void { ; }
+}
+
+export abstract class IInitializer extends ITask {
+}
+
+export abstract class IDataProvider {
+  public initialize(cb: CallbackHandler): void {; }
+}
+
+export interface TaskFinishedHandler {
+  (error: any, data: any): void;
+}
+
+export interface CallbackHandler {
+  (...args: any[]): void;
+}

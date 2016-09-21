@@ -1,3 +1,6 @@
+import {Container} from "../core/factory";
+import {Context} from "../core/context";
+
 export abstract class Controller {
 
   private _request : any;
@@ -15,9 +18,17 @@ export abstract class Controller {
     return this._next;
   }
 
+  private _context: Context;
+  public get context(): Context {
+    return this._context;
+  }
+
   constructor(request: any, response: any, next?: any) {
     this._request = request;
     this._response = response;
     this._next = next;
+
+    // HACK!!!!
+    this._context = Container.get(Context);
   }
 }

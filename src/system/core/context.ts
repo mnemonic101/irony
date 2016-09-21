@@ -25,6 +25,14 @@ export class Context {
     return this._framework;
   }
 
+  private _dataProvider: any;
+  public get dataProvider(): any {
+    return this._dataProvider;
+  }
+  public set dataProvider(value: any) {
+    this._dataProvider = value;
+  }
+
   constructor(
     @Inject framework: IFramework,
     @Inject logger: ILogger,

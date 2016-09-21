@@ -76,6 +76,18 @@ export class RouteHandler {
         next(err);
         });
         }*/
+        else if (value.body) {
+          res.writeHeader(value.code, value.headers);
+          res.end(value.body);
+        }
+        else if (value.promise) {
+          let self = this;
+          value.promise.then(function (val) {
+            self.sendValue(val, res, next);
+          }).catch(function (err) {
+            next(err);
+          });
+        }
         else {
           res.json(value);
         }

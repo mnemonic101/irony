@@ -1,5 +1,7 @@
-import {HttpVerb, ParamType} from "../router/enums";
+import {ParamType} from "../router/enums";
 import {RouteHandler} from "../router/handler";
+
+import {Promise} from "es6-promise";
 
 export class RouteArea {
   public targetClass: Function;
@@ -27,25 +29,29 @@ export class RouteArea {
 }
 
 export class FileParam {
-  public name: string;
-  public singleFile: boolean;
-
-  constructor(name: string, singleFile: boolean) {
-    this.name = name;
-    this.singleFile = singleFile;
+  constructor(
+    public name: string,
+    public singleFile: boolean) {
   }
 }
 
 export class MethodParam {
-  public name: string;
-  public type: Function;
-  public paramType: ParamType;
-
-  constructor(name: string, type: Function, paramType: ParamType) {
-    this.name = name;
-    this.type = type;
-    this.paramType = paramType;
+  constructor(
+    public name: string,
+    public type: Function,
+    public paramType: ParamType) {
   }
+}
+
+export class ResponseData {
+  public body: string;
+  public code: number;
+  public headers: { [id: string]: string };
+}
+
+export interface IActionResult<T> {
+  promise: Promise<T>;
+  data: T;
 }
 
 export class RequestContext {

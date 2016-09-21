@@ -1,0 +1,8 @@
+/.vscode
+/node_modules
+/spec
+.npmignore
+gulpfile.js
+tsconfig.json
+tslint.json
+typings.json

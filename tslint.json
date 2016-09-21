@@ -12,6 +12,7 @@
             true, "check-open-brace"
         ],
         "object-literal-sort-keys": false,
-        "no-string-literal": false
+        "no-string-literal": false,
+        "member-ordering": [false]
     }
 }
