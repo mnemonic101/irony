@@ -15,7 +15,6 @@ export class RouterAdapter implements IRouter {
   public router: express.Application;
 
   constructor() {
-    console.log("RouteAdapter constructed...");
     this.router = express();
   }
 

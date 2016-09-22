@@ -8,6 +8,8 @@ import {ILogger, IFramework, IDataAdapter, ITask} from "../core/interfaces";
 import {Context} from "../core/context";
 import {Configuration} from "../config/configuration";
 
+import {Adapter as IntermediateLogger} from "../adapter/logger";
+
 import * as fs from "fs";
 import * as path from "path";
 
@@ -20,6 +22,8 @@ export abstract class WebServer {
     }
   }
 
+  private logger: ILogger = new IntermediateLogger({ bufferLogs: true });
+
   private _context: Context;
   public get context(): Context {
     return this._context;
@@ -30,19 +34,30 @@ export abstract class WebServer {
   private tasks: any[] = [];
 
   constructor() {
+    this.logger.log("Application is starting...", typeof(this));
+
     this.execute();
   }
 
   public execute() {
 
-    this.initializeConfiguration();
+    this.initializeSystem();
+    this.initializeApplication();
+  }
 
+  private initializeSystem() {
+
+    this.initializeConfiguration();
     this.initializeAdapter();
+    this.initializeContext();
+  }
+
+  private initializeApplication() {
+
     this.initializeController();
     this.initializeRequestHandler();
     this.initializeTasks();
 
-    this.initializeContext();
     this.initializeRoutes();
 
     this.executeTasks()
@@ -55,8 +70,8 @@ export abstract class WebServer {
 
   private initializeAdapter(): void {
 
-    this.registerAdapter(IFramework, "framework");
     this.registerAdapter(ILogger, "logger");
+    this.registerAdapter(IFramework, "framework");
     this.registerAdapter(IDataAdapter, "data");
   }
 
@@ -92,10 +107,10 @@ export abstract class WebServer {
           if (filename.match(/[^\.]*\.js$/i)) {
 
             let fullFilePath: string = path.posix.resolve(fullModulePath, filename);
-            console.log(fullFilePath);
+            this.logger.log(fullFilePath);
 
             let module = require(fullFilePath);
-            console.log(module);
+            this.logger.log(module);
 
             modules.push(module);
           }
@@ -157,6 +172,18 @@ export abstract class WebServer {
 
   private initializeContext(): void {
     this._context = Container.get(Context);
+
+    this.switchLogger();
+  }
+
+  private switchLogger() {
+
+    let logger = <IntermediateLogger>this.logger;
+    this.logger = this.context.logger;
+
+    logger.flushBuffer((logData) => {
+      this.logger.log(logData.message, logData.optionalParams);
+    });
   }
 
   private initializeRoutes(): void {
@@ -180,10 +207,10 @@ export abstract class WebServer {
   }
 
   private onTaskSuccess(task: any): void {
-    this.context.logger.log("Task executed", task.name);
+    this.logger.log("Task executed", task.name);
   }
   private onTaskError(task: any): void {
-    this.context.logger.log("Task failed", task.name, task.error);
+    this.logger.log("Task failed", task.name, task.error);
     throw task.error;
   }
 
@@ -210,7 +237,7 @@ export abstract class WebServer {
       + ":" + this.context.settings.port
       + this.context.settings.root;
 
-    this.context.logger.log("Web Server is running at", url);
+    this.logger.log("Application Web Server is running at", url);
 
     this.onAfterServerStart();
   }
