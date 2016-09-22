@@ -1,4 +1,5 @@
 // This should have no dependencies on anything else!
+import {Promise} from "../core";
 
 // Fake interfaces for DI!
 // Those needs to be an 'abstract class' for now, 
@@ -27,15 +28,21 @@ export abstract class IFramework {
 }
 
 export abstract class ITask {
-  public execute(cb: TaskFinishedHandler): void { ; }
+  public abstract execute(): Promise<any>;
 }
 
 export abstract class IInitializer extends ITask {
 }
 
-export abstract class IDataProvider {
-  public initialize(cb: CallbackHandler): void {; }
+export abstract class IDataAdapter<T> {
+  public provider: T;
+  public abstract initialize(cb: CallbackHandler): void;
 }
+
+export abstract class IDataContext {
+  public provider: any;
+}
+
 
 export interface TaskFinishedHandler {
   (error: any, data: any): void;

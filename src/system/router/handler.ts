@@ -109,7 +109,7 @@ export class RouteHandler {
   private createRouteHandler(routeArea: RouteArea, context: RequestContext): any {
 
     let routeHandler = Object.create(routeArea.targetClass);
-    let result = routeArea.targetClass.constructor.apply(routeHandler, [context.request, context.response, context.next]);
+    routeArea.targetClass.constructor.apply(routeHandler, [context.request, context.response, context.next]);
 
     if (routeArea.hasProperties()) {
       routeArea.properties.forEach((paramType, key) => {

@@ -1,6 +1,6 @@
-import {AutoWired, Singleton, Inject} from "../core/factory";
+import {AutoWired, Singleton, Inject, Container} from "../core/factory";
 
-import {ILogger, IFramework} from "../core/interfaces";
+import {ILogger, IFramework, IDataContext} from "../core/interfaces";
 
 import {Settings} from "../config/settings";
 
@@ -25,12 +25,9 @@ export class Context {
     return this._framework;
   }
 
-  private _dataProvider: any;
   public get dataProvider(): any {
-    return this._dataProvider;
-  }
-  public set dataProvider(value: any) {
-    this._dataProvider = value;
+    let context: IDataContext = Container.get(IDataContext);
+    return context.provider;
   }
 
   constructor(

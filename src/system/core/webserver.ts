@@ -1,9 +1,10 @@
 import {Container} from "../core/factory";
 import {FileSystemHelper} from "../core/helper";
+import {Promise} from "../core";
 
 import {RouteRegistrar} from "../router/registrar";
 
-import {ILogger, IFramework} from "../core/interfaces";
+import {ILogger, IFramework, IDataAdapter, ITask} from "../core/interfaces";
 import {Context} from "../core/context";
 import {Configuration} from "../config/configuration";
 
@@ -42,9 +43,8 @@ export abstract class WebServer {
     this.initializeContext();
     this.initializeRoutes();
 
-    this.executeTasks();
-
-    this.startWebServer();
+    this.executeTasks()
+      .then(() => { this.startWebServer(); });
   }
 
   private initializeConfiguration(): void {
@@ -55,6 +55,7 @@ export abstract class WebServer {
 
     this.registerAdapter(IFramework, "framework");
     this.registerAdapter(ILogger, "logger");
+    this.registerAdapter(IDataAdapter, "data");
   }
 
   private registerAdapter(typeOfAdapter: Function, name?: string): void {
@@ -101,6 +102,7 @@ export abstract class WebServer {
     // TODO: Improve the resolution of dynamic module binding!
     // TODO: Create a strategy to search folders!
 
+    let filePath = (filename !== "") ? "/" + filename : "";
     if (path.indexOf(this.config.settings.basePath) === -1) {
       let foldersToSearch: Array<string> = [];
 
@@ -110,10 +112,10 @@ export abstract class WebServer {
       foldersToSearch.push(this.config.coreBasePath + "/system/" + path);
 
       let newPath = "";
-      while (!FileSystemHelper.fileOrFolderExists(newPath) && path !== newPath) {
+      while (!FileSystemHelper.fileOrFolderExists(newPath + filePath) && path !== newPath) {
 
         newPath = foldersToSearch.pop();
-        if (FileSystemHelper.fileOrFolderExists(newPath + "/" + filename)) {
+        if (FileSystemHelper.fileOrFolderExists(newPath + filePath)) {
           path = newPath;
         }
       }
@@ -122,14 +124,20 @@ export abstract class WebServer {
       }
     }
 
-    let absoluteFilePath: string = path + "/" + filename;
+    let absoluteFilePath: string = path + filePath;
     return fs.realpathSync(absoluteFilePath);
   }
 
   private initializeTasks(): void {
 
     let pathToInitializers: string = "/initializers";
-    this.tasks = this.resolveModules(pathToInitializers);
+    this.resolveModules(pathToInitializers).forEach(module => {
+      for (let key in module) {
+        if (module.hasOwnProperty(key)) {
+          this.tasks.push({ name: key, instance: module[key] });
+        }
+      }
+    });
   }
 
   private initializeContext(): void {
@@ -141,24 +149,27 @@ export abstract class WebServer {
     registrar.registerRoutes();
   }
 
-  private executeTasks(): void {
+  private executeTasks(): Promise<any> {
+    let promises: any[] = [];
+
     this.tasks.forEach(task => {
-      let that = this;
-      task.Initializer.prototype.execute((error: any, data: any) => {
-        that.onTaskExecuted(error, data);
-      });
+      let promise = (<ITask> Container.get(task.instance)).execute();
+      promise
+        .then((data: any) => { this.onTaskSuccess({ name: task.name, data: data }); })
+        .catch((error: any) => { this.onTaskError({ name: task.name, error: error }); });
+
+      promises.push(promise);
     });
+
+    return Promise.all(promises);
   }
 
-  private onTaskExecuted(error: any, data: any): void {
-    if (error) {
-      this.context.logger.log("Task failed", error);
-      throw error;
-    } else {
-      // HACK!!!
-      this.context.dataProvider = data;
-      this.context.logger.log("Task executed", data);
-    }
+  private onTaskSuccess(task: any): void {
+    this.context.logger.log("Task executed", task.name);
+  }
+  private onTaskError(task: any): void {
+    this.context.logger.log("Task failed", task.name, task.error);
+    throw task.error;
   }
 
   public onBeforeServerStart(): void {
