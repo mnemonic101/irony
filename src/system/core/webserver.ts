@@ -9,6 +9,7 @@ import {Context} from "../core/context";
 import {Configuration} from "../config/configuration";
 
 import * as fs from "fs";
+import * as path from "path";
 
 export abstract class WebServer {
 
@@ -36,8 +37,9 @@ export abstract class WebServer {
 
     this.initializeConfiguration();
 
-    this.initializeAdapters();
-    this.initializeControllers();
+    this.initializeAdapter();
+    this.initializeController();
+    this.initializeRequestHandler();
     this.initializeTasks();
 
     this.initializeContext();
@@ -51,7 +53,7 @@ export abstract class WebServer {
     this.config = Container.get(Configuration);
   }
 
-  private initializeAdapters(): void {
+  private initializeAdapter(): void {
 
     this.registerAdapter(IFramework, "framework");
     this.registerAdapter(ILogger, "logger");
@@ -61,43 +63,56 @@ export abstract class WebServer {
   private registerAdapter(typeOfAdapter: Function, name?: string): void {
 
     let modulePath = this.resolveModulePath("/adapter", name);
-    let module: any = require(modulePath);
+    let module: any = require(modulePath[0]);
     Container.bind(typeOfAdapter).to(module.Adapter);
   }
 
-  private initializeControllers(): void {
+  private initializeController(): void {
 
     let pathToControllers: string = "/controller";
+    this.resolveModules(pathToControllers);
+  }
+
+  private initializeRequestHandler(): void {
+
+    let pathToControllers: string = "/handler";
     this.resolveModules(pathToControllers);
   }
 
   private resolveModules(pathFragment: string): any[] {
     let modules: any[] = [];
 
-    let fullModulePath: string = this.resolveModulePath(pathFragment, "");
+    let fullModulePaths: string[] = this.resolveModulePath(pathFragment, "");
+    fullModulePaths.forEach(fullModulePath => {
+      if (FileSystemHelper.isFolder(fullModulePath)) {
 
-    if (FileSystemHelper.isFolder(fullModulePath)) {
+        let filenamesInFolder: Array<string> = fs.readdirSync(fullModulePath);
+        filenamesInFolder.forEach(filename => {
 
-      let filenamesInFolder: Array<string> = fs.readdirSync(fullModulePath);
-      for (let filename of filenamesInFolder) {
-        if (filename.match(/[^\.]*\.js$/i)) {
-          let fullFilePath: string = this.resolveModulePath(fullModulePath, filename);
-          console.log(fullFilePath);
+          if (filename.match(/[^\.]*\.js$/i)) {
 
-          let module = require(fullFilePath);
-          console.log(module);
+            let fullFilePath: string = path.posix.resolve(fullModulePath, filename);
+            // this.resolveModulePath(fullModulePath, filename);
 
-          modules.push(module);
-        }
+            console.log(fullFilePath);
+
+            let module = require(fullFilePath);
+            console.log(module);
+
+            modules.push(module);
+          }
+        });
+      } else {
+        throw new Error("Modules could not be resolved by path. Path does not exists [" + pathFragment + "].");
       }
-    } else {
-      throw new Error("Modules could not be resolved by path. Path does not exists [" + pathFragment + "].");
-    }
+    });
 
     return modules;
   }
 
-  private resolveModulePath(path: string, filename: string): string {
+  private resolveModulePath(path: string, filename: string): string[] {
+
+    let paths: string[] = [];
 
     // TODO: Improve the resolution of dynamic module binding!
     // TODO: Create a strategy to search folders!
@@ -106,26 +121,28 @@ export abstract class WebServer {
     if (path.indexOf(this.config.settings.basePath) === -1) {
       let foldersToSearch: Array<string> = [];
 
-      foldersToSearch.push(this.config.appBasePath + "/" + path);
-      foldersToSearch.push(this.config.appBasePath + "/system/" + path);
-      foldersToSearch.push(this.config.coreBasePath + "/" + path);
       foldersToSearch.push(this.config.coreBasePath + "/system/" + path);
+      foldersToSearch.push(this.config.coreBasePath + "/" + path);
+      foldersToSearch.push(this.config.appBasePath + "/system/" + path);
+      foldersToSearch.push(this.config.appBasePath + "/" + path);
 
       let newPath = "";
-      while (!FileSystemHelper.fileOrFolderExists(newPath + filePath) && path !== newPath) {
+      while (foldersToSearch.length !== 0/*!FileSystemHelper.fileOrFolderExists(newPath + filePath) && path !== newPath*/) {
 
         newPath = foldersToSearch.pop();
         if (FileSystemHelper.fileOrFolderExists(newPath + filePath)) {
           path = newPath;
+
+          let absoluteFilePath: string = path + filePath;
+          paths.push(fs.realpathSync(absoluteFilePath));
         }
       }
-      if (path !== newPath) {
+      if (paths.length === 0/*path !== newPath*/) {
         throw new Error("Path could not be determined. Path [" + path + "], File [" + filename + "].");
       }
     }
 
-    let absoluteFilePath: string = path + filePath;
-    return fs.realpathSync(absoluteFilePath);
+    return paths;
   }
 
   private initializeTasks(): void {
@@ -153,7 +170,7 @@ export abstract class WebServer {
     let promises: any[] = [];
 
     this.tasks.forEach(task => {
-      let promise = (<ITask> Container.get(task.instance)).execute();
+      let promise = (<ITask>Container.get(task.instance)).execute();
       promise
         .then((data: any) => { this.onTaskSuccess({ name: task.name, data: data }); })
         .catch((error: any) => { this.onTaskError({ name: task.name, error: error }); });
