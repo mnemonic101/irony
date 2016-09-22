@@ -92,8 +92,6 @@ export abstract class WebServer {
           if (filename.match(/[^\.]*\.js$/i)) {
 
             let fullFilePath: string = path.posix.resolve(fullModulePath, filename);
-            // this.resolveModulePath(fullModulePath, filename);
-
             console.log(fullFilePath);
 
             let module = require(fullFilePath);
@@ -127,7 +125,7 @@ export abstract class WebServer {
       foldersToSearch.push(this.config.appBasePath + "/" + path);
 
       let newPath = "";
-      while (foldersToSearch.length !== 0/*!FileSystemHelper.fileOrFolderExists(newPath + filePath) && path !== newPath*/) {
+      while (foldersToSearch.length !== 0) {
 
         newPath = foldersToSearch.pop();
         if (FileSystemHelper.fileOrFolderExists(newPath + filePath)) {
@@ -137,7 +135,7 @@ export abstract class WebServer {
           paths.push(fs.realpathSync(absoluteFilePath));
         }
       }
-      if (paths.length === 0/*path !== newPath*/) {
+      if (paths.length === 0) {
         throw new Error("Path could not be determined. Path [" + path + "], File [" + filename + "].");
       }
     }
