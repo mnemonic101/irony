@@ -8,13 +8,13 @@ import * as http from "http";
 @AutoWired
 export class Adapter implements IFramework {
 
- public router: IRouter;
+  public router: IRouter;
 
- constructor(@Inject router: RouterAdapter) {
- this.router = router;
- }
+  constructor( @Inject router: RouterAdapter) {
+    this.router = router;
+  }
 
- public startWebServer(port: number, hostname: string, callback?: Function): http.Server {
- return (<any> this.router).router.listen(port, hostname, callback);
- }
+  public startWebServer(port: number, hostname: string, callback?: Function): http.Server {
+    return (<RouterAdapter>this.router).startWebServer(port, hostname, callback);
+  }
 }

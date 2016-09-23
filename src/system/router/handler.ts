@@ -71,8 +71,17 @@ export class RouteHandler {
             response.end(value.body);
             isHandled = true;
             break;
+          case "Promise":
+            let self = this;
+            value.then(function (data) {
+              self.sendValue(data, response, next);
+            }).catch(function (err) {
+              next(err);
+            });
+            isHandled = true;
+            break;
           default:
-            // Fall Through
+          // Fall Through
         }
         if (isHandled) break;
       default:
@@ -80,14 +89,14 @@ export class RouteHandler {
           response.set("Location", value.location);
           response.sendStatus(value.statusCode);
         }
-        else if (value.promise) {
+        /*else if (value.promise) {
           let self = this;
           value.promise.then(function (data) {
             self.sendValue(data, response, next);
           }).catch(function (err) {
             next(err);
           });
-        }
+        }*/
         else {
           response.json(value);
         }

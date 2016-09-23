@@ -1,5 +1,5 @@
 export enum HttpVerb {
-  GET = 1,
+  GET,
   POST,
   PUT,
   DELETE,
@@ -9,7 +9,7 @@ export enum HttpVerb {
 }
 
 export enum ParamType {
-  path = 1,
+  path,
   query,
   header,
   cookie,

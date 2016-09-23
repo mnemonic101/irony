@@ -6,12 +6,17 @@ import {RouteArea} from "../router/metadata";
 import {RouteHandler} from "../router/handler";
 
 import {IRouter} from "../core/interfaces";
+import {Set, StringMap} from "../core/utils";
+
+import * as StringUtils from "underscore.string";
 
 @AutoWired
 @Singleton
 export class RouteRegistrar {
-  public routeAreas: Array<RouteArea> = new Array<RouteArea>();
-  public pathsResolved: boolean = false;
+
+  private paths: StringMap<Set<HttpVerb>> = new StringMap<Set<HttpVerb>>();
+  private routeAreas: Array<RouteArea> = new Array<RouteArea>();
+  private pathsResolved: boolean = false;
 
   private router: IRouter;
   constructor( @Inject router: IRouter) {
@@ -78,26 +83,69 @@ export class RouteRegistrar {
 
   private resolvePath(routeArea: RouteArea, routeHandler: RouteHandler): void {
     let classPath: string = routeArea.path ? routeArea.path.trim() : "";
-    let resolvedPath = ""; /* TODO: classPath.startsWith('/') ? classPath : '/' + classPath;
-if (resolvedPath.endsWith('/')) {
-resolvedPath = resolvedPath.slice(0, resolvedPath.length - 1);
-}*/
+
+    let resolvedPath = StringUtils.startsWith(classPath, "/") ? classPath : "/" + classPath;
+    if (StringUtils.endsWith(resolvedPath, "/")) {
+      resolvedPath = resolvedPath.slice(0, resolvedPath.length - 1);
+    }
 
     if (routeHandler.path) {
       let methodPath: string = routeHandler.path.trim();
       resolvedPath = classPath + (/* TODO: methodPath.startsWith('/') ? methodPath : '/' + */methodPath);
     }
 
-    let declaredHttpMethods: Array<HttpVerb> = []; /* TODO: Set<HttpMethod> = InternalServer.paths.get(resolvedPath);
-if (!declaredHttpMethods) {
-declaredHttpMethods = new Set<HttpMethod>();
-InternalServer.paths.set(resolvedPath, declaredHttpMethods);
-}
-if (declaredHttpMethods.has(serviceMethod.httpMethod)) {
-throw Error("Duplicated declaration for path [" + resolvedPath + "], method ["
-+ serviceMethod.httpMethod + "]. ");
-}*/
-    declaredHttpMethods[routeHandler.httpVerb];
+    let declaredHttpMethods: Set<HttpVerb> = this.paths.get(resolvedPath);
+    if (!declaredHttpMethods) {
+      declaredHttpMethods = new Set<HttpVerb>();
+      this.paths.set(resolvedPath, declaredHttpMethods);
+    }
+    if (declaredHttpMethods.has(routeHandler.httpVerb)) {
+      throw Error("Duplicated declaration for path [" + resolvedPath + "], method ["
+        + routeHandler.httpVerb + "]. ");
+    }
+    declaredHttpMethods.add(routeHandler.httpVerb);
     routeHandler.resolvedPath = resolvedPath;
   }
+
+  private resolveAllPaths() {
+    if (!this.pathsResolved) {
+      this.paths.clear();
+      this.routeAreas.forEach(classData => {
+        classData.handlers.forEach(method => {
+          if (!method.resolvedPath) {
+            this.resolveProperties(classData, method);
+          }
+        });
+      });
+      this.pathsResolved = true;
+    }
+  }
+
+  /*private handleNotAllowedMethods() {
+    let paths: Set<string> = this.getPaths();
+    paths.forEach((path) => {
+      let supported: Set<HttpVerb> = this.getHttpMethods(path);
+      let allowedMethods: Array<string> = new Array<string>();
+      supported.forEach((method: HttpVerb) => {
+        allowedMethods.push(HttpVerb[method]);
+      });
+      let allowed: string = allowedMethods.join(", ");
+      this.router.all(path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        res.set("Allow", allowed);
+        throw new Errors.MethodNotAllowedError();
+      });
+    });
+  }
+
+  private getPaths(): Set<string> {
+    this.resolveAllPaths();
+    return new Set(this.paths.keys());
+  }
+
+  private getHttpMethods(path: string): Set<HttpVerb> {
+    this.resolveAllPaths();
+    let methods: Set<HttpVerb> = this.paths.get(path);
+    return methods || new Set<HttpVerb>();
+  }*/
+
 }

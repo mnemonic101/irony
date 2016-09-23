@@ -3,7 +3,8 @@ import * as path from "path";
 
 export class FileSystemHelper {
 
-  public static locateFolderOf(pathSegemnt: string, relocate: boolean = true, startpath: string = "", searchUp: boolean = true): string {
+  public static locateFolderOf(
+    pathSegemnt: string, relocate: boolean = true, startpath: string = "", searchUp: boolean = true): string {
     if (!searchUp) { throw new Error("Traversing down the path to locate a file is not supported yet!"); }
 
     startpath = path.posix.resolve(startpath || process.cwd());
@@ -28,13 +29,15 @@ export class FileSystemHelper {
     }
 
     if (resolvedPath === "") {
-      throw new Error("Could not locate any file traversing up the path. File [" + pathSegemnt + "] Path [" + startpath + "]");
+      throw new Error(
+        "Could not locate any file traversing up the path. File [" + pathSegemnt + "] Path [" + startpath + "]");
     }
 
     return resolvedPath;
   }
 
-  public static locateAndReadFile(filename: string, relocate?: boolean, startpath?: string, searchUp?: boolean): Buffer {
+  public static locateAndReadFile(
+    filename: string, relocate?: boolean, startpath?: string, searchUp?: boolean): Buffer {
     let libRoot = FileSystemHelper.locateFolderOf(filename, relocate, startpath, searchUp);
     let buffer: Buffer = fs.readFileSync(libRoot + "/" + filename);
     return buffer;

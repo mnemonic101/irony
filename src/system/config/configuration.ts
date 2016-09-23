@@ -1,6 +1,5 @@
 import {AutoWired, Inject, Singleton} from "../core/factory";
-import {FileSystemHelper} from "../core/helper";
-import * as path from "path";
+import {FileSystemHelper} from "../core/utils";
 
 import {Package} from "../config/package";
 import {Settings} from "../config/settings";

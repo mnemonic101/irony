@@ -1,6 +1,6 @@
 import {Provided, Provider} from "../factory";
 
-import {FileSystemHelper} from "../../core/helper";
+import {FileSystemHelper} from "../../core/utils";
 
 import {TypedJSON} from "typedjson";
 
