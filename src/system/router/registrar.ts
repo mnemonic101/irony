@@ -1,4 +1,5 @@
 import {AutoWired, Inject, Singleton} from "../core/factory";
+import {Context} from "../core/context";
 
 import {HttpVerb} from "../router/enums";
 import {RouteArea} from "../router/metadata";
@@ -10,17 +11,30 @@ import {Set, StringMap} from "../core/utils";
 
 import * as StringUtils from "underscore.string";
 
+// TODO: Seperate concerns! The RouteRegistrar class has too many responsibilities!
+
 @AutoWired
 @Singleton
 export class RouteRegistrar {
 
   private paths: StringMap<Set<HttpVerb>> = new StringMap<Set<HttpVerb>>();
   private routeAreas: Array<RouteArea> = new Array<RouteArea>();
+  private httpHandler: Array<RouteArea> = new Array<RouteArea>();
   private pathsResolved: boolean = false;
 
-  private router: IRouter;
-  constructor( @Inject router: IRouter) {
-    this.router = router;
+  constructor(
+    @Inject private router: IRouter,
+    @Inject private context: Context) {
+  }
+
+  public addHttpHandler(target: any): RouteArea {
+    this.pathsResolved = false;
+    let name: string = target.name || target.constructor.name;
+    if (!this.httpHandler.hasOwnProperty(name)) {
+      this.httpHandler[name] = new RouteArea(target);
+    }
+    let httpHandler: RouteArea = this.httpHandler[name];
+    return httpHandler;
   }
 
   public addRouteArea(target: any): RouteArea {
@@ -46,19 +60,41 @@ export class RouteRegistrar {
     return null;
   }
 
+  public registerHttpHandler(path: string) {
+    // HACK!!!!!!!!!!!!!!!!!
+    for (let handler in this.httpHandler) {
+      if (this.httpHandler.hasOwnProperty(handler)) {
+
+        let routeArea = this.httpHandler[handler];
+        if (StringUtils.startsWith(routeArea.path, path)) {
+          this.context.logger.log("registerHttpHandler ==> [%s]", handler);
+          this.router.addMiddleware("/", (request, response, next) => {
+            // TODO: The RequestHandler should be resolved by IoC!
+            let routeHandler = Object.create(routeArea.targetClass.prototype);
+            routeArea.targetClass.prototype.constructor.apply(routeHandler, [request, response, next]);
+          });
+        }
+      }
+    }
+
+  }
+
   public registerRoutes() {
 
     for (let controller in this.routeAreas) {
       if (this.routeAreas.hasOwnProperty(controller)) {
         let routeArea = this.routeAreas[controller];
+        this.context.logger.log("registerController ==> [%s]", controller);
         for (let method in routeArea.handlers) {
           if (routeArea.handlers.hasOwnProperty(method)) {
             let routeHandler = routeArea.handlers[method];
+            this.context.logger.log("registerAction ==> [%s]", method);
             this.buildRoute(routeArea, routeHandler);
           }
         }
       }
     }
+
     this.pathsResolved = true;
   }
 
@@ -91,7 +127,7 @@ export class RouteRegistrar {
 
     if (routeHandler.path) {
       let methodPath: string = routeHandler.path.trim();
-      resolvedPath = classPath + (/* TODO: methodPath.startsWith('/') ? methodPath : '/' + */methodPath);
+      resolvedPath = classPath + (StringUtils.startsWith(methodPath, "/") ? methodPath : "/" + methodPath);
     }
 
     let declaredHttpMethods: Set<HttpVerb> = this.paths.get(resolvedPath);
@@ -100,6 +136,7 @@ export class RouteRegistrar {
       this.paths.set(resolvedPath, declaredHttpMethods);
     }
     if (declaredHttpMethods.has(routeHandler.httpVerb)) {
+      // TODO: Improve error handling: http://expressjs.com/en/guide/error-handling.html
       throw Error("Duplicated declaration for path [" + resolvedPath + "], method ["
         + routeHandler.httpVerb + "]. ");
     }
@@ -107,7 +144,7 @@ export class RouteRegistrar {
     routeHandler.resolvedPath = resolvedPath;
   }
 
-  private resolveAllPaths() {
+  /*private resolveAllPaths() {
     if (!this.pathsResolved) {
       this.paths.clear();
       this.routeAreas.forEach(classData => {
@@ -121,7 +158,7 @@ export class RouteRegistrar {
     }
   }
 
-  /*private handleNotAllowedMethods() {
+  private handleNotAllowedMethods() {
     let paths: Set<string> = this.getPaths();
     paths.forEach((path) => {
       let supported: Set<HttpVerb> = this.getHttpMethods(path);

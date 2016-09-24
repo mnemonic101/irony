@@ -1,6 +1,13 @@
 import {ParamType} from "../router/enums";
 import {RouteHandler} from "../router/handler";
 
+// TODO: Clarify wording: 
+//       RouteArea ==> RouteData
+//       A 'RouteData' object describes a specific range of routes.
+//       It is created by decorating a class (with @Controller or @Handler).
+//       It could contain RouteAction(Data) to describe specific actions.
+//       RouteHandler ==> RouteAction(Data)
+
 export class RouteArea {
   public targetClass: Function;
   public path: string;
@@ -75,7 +82,7 @@ export abstract class HttpError extends Error {
   constructor(name: string, public statusCode: number, public message?: string) {
     super(message);
     this.name = name;
-    this.stack = (<any> new Error()).stack;
+    this.stack = (<any>new Error()).stack;
   }
 }
 

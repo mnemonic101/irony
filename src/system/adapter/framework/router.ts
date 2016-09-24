@@ -1,5 +1,6 @@
-import {AutoWired, Singleton, Provides} from "../../core/factory";
+import {AutoWired, Inject, Singleton, Provides} from "../../core/factory";
 
+import {ILogger} from "../../core/interfaces";
 import {IRouter} from "../../core/interfaces";
 import {HttpVerb} from "../../router/enums";
 
@@ -14,18 +15,29 @@ export class RouterAdapter implements IRouter {
 
   public router: express.Application;
 
-  constructor() {
+  private context: { logger: ILogger };
+
+  constructor(@Inject logger: ILogger) {
     this.router = express();
+
+    this.context = { logger: logger };
   }
 
-  public addRequestHandler(name: string, handler: coreExpress.RequestHandler): void {
-    this.router.use(name, handler);
+  public addMiddleware(path: string, handler: coreExpress.RequestHandler): void {
+    this.context.logger.log("addMiddleware => [%s]", path );
+    this.router.use(path, handler);
+  }
+
+  public addRequestHandler(path: string, handler: coreExpress.RequestHandler): void {
+    this.context.logger.log("addRequestHandler => [%s]", path );
+    this.router.all(path, handler);
   }
   public startWebServer(port: number, hostname: string, callback?: Function): http.Server {
     return this.router.listen(port, hostname, callback);
   }
 
   public register(httpVerb: HttpVerb, path: string, handler: any) {
+    this.context.logger.log("register => [%s] [%s]", httpVerb, path );
 
     let args: any[] = [];
     args.push(path);
@@ -55,6 +67,7 @@ export class RouterAdapter implements IRouter {
         break;
 
       default:
+        // TODO: Improve error handling: http://expressjs.com/en/guide/error-handling.html
         throw Error("Invalid http method registration. Http verb [" + httpVerb + "], Handler [" + path + "]");
     }
   }

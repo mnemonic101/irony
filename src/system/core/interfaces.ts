@@ -18,6 +18,7 @@ import * as http from "http";
 import {HttpVerb} from "../router/enums";
 
 export abstract class IRouter {
+  public abstract addMiddleware(name: string, handler: any): void;
   public abstract addRequestHandler(name: string, handler: any): void;
   public abstract register(httpVerb: HttpVerb, path: string, handler: any);
 }

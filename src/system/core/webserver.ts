@@ -34,7 +34,7 @@ export abstract class WebServer {
   private tasks: any[] = [];
 
   constructor() {
-    this.logger.log("Application is starting...", typeof(this));
+    this.logger.log("Application is starting...", typeof (this));
 
     this.execute();
   }
@@ -188,7 +188,10 @@ export abstract class WebServer {
 
   private initializeRoutes(): void {
     let registrar: RouteRegistrar = Container.get(RouteRegistrar);
+    // HACK!!!!!!!!!
+    registrar.registerHttpHandler("/1");
     registrar.registerRoutes();
+    registrar.registerHttpHandler("/2");
   }
 
   private executeTasks(): Promise<any> {

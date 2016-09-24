@@ -6,6 +6,26 @@ import {HttpVerb, ParamType} from "../router/enums";
 import {RouteArea, MethodParam, FileParam} from "../router/metadata";
 import {RouteHandler} from "../router/handler";
 
+export function Handler(path: string) {
+
+  return function (...args: any[]) {
+
+    if (args.length === 1) {
+      return HandlerDecorator.apply(this, [args[0], path]);
+    }
+
+    throw new Error("Invalid @Handler Decorator declaration.");
+  };
+}
+
+function HandlerDecorator(target: Function, path: string) {
+  let registrar: RouteRegistrar = Container.get(RouteRegistrar);
+  let routeHandler: RouteArea = registrar.addHttpHandler(target);
+  if (routeHandler) { // does not intercept constructor
+    routeHandler.path = path;
+  }
+}
+
 export function Route(path: string) {
   return function (...args: any[]) {
     if (args.length === 1) {
@@ -20,13 +40,13 @@ export function Route(path: string) {
 }
 
 function RouteAreaDecorator(target: Function, path: string) {
-  let registrar = Container.get(RouteRegistrar);
+  let registrar: RouteRegistrar = Container.get(RouteRegistrar);
   let routeArea: RouteArea = registrar.addRouteArea(target);
   routeArea.path = path;
 }
 
 function RouteActionDecorator(target: any, propertyKey: string, descriptor: PropertyDescriptor, path: string) {
-  let registrar = Container.get(RouteRegistrar);
+  let registrar: RouteRegistrar = Container.get(RouteRegistrar);
   let routeHandler: RouteHandler = registrar.addRouteHandler(target, propertyKey);
   if (routeHandler) { // does not intercept constructor
     routeHandler.path = path;
@@ -64,24 +84,24 @@ function processDecoratedParameter(
     }*/
 }
 
-export function GET(target: any, propertyKey: string, descriptor: PropertyDescriptor){
-    processHttpVerb(target, propertyKey, HttpVerb.GET);
+export function GET(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  processHttpVerb(target, propertyKey, HttpVerb.GET);
 }
 
 export function POST(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    processHttpVerb(target, propertyKey, HttpVerb.POST);
+  processHttpVerb(target, propertyKey, HttpVerb.POST);
 }
 
 export function PUT(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    processHttpVerb(target, propertyKey, HttpVerb.PUT);
+  processHttpVerb(target, propertyKey, HttpVerb.PUT);
 }
 
 export function DELETE(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    processHttpVerb(target, propertyKey, HttpVerb.DELETE);
+  processHttpVerb(target, propertyKey, HttpVerb.DELETE);
 }
 
 export function HEAD(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    processHttpVerb(target, propertyKey, HttpVerb.HEAD);
+  processHttpVerb(target, propertyKey, HttpVerb.HEAD);
 }
 
 export function OPTIONS(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -89,11 +109,11 @@ export function OPTIONS(target: any, propertyKey: string, descriptor: PropertyDe
 }
 
 export function PATCH(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    processHttpVerb(target, propertyKey, HttpVerb.PATCH);
+  processHttpVerb(target, propertyKey, HttpVerb.PATCH);
 }
 
 function processHttpVerb(target: any, propertyKey: string, httpVerb: HttpVerb) {
-  let registrar = Container.get(RouteRegistrar);
+  let registrar: RouteRegistrar = Container.get(RouteRegistrar);
   let routeHandler: RouteHandler = registrar.addRouteHandler(target, propertyKey);
   if (routeHandler) { // does not intercept constructor
     if (routeHandler.httpVerb) {

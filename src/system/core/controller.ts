@@ -1,19 +1,19 @@
 import {Container} from "../core/factory";
 import {Context} from "../core/context";
 
-export abstract class Controller {
+export abstract class Controller/* TODO: extends RequestHandlerBase*/ {
 
-  private _request : any;
+  private _request: any;
   public get request(): any {
     return this._request;
   }
 
-  private _response : any;
+  private _response: any;
   public get response(): any {
     return this._response;
   }
 
-  private _next : any;
+  private _next: any;
   public get next(): any {
     return this._next;
   }
@@ -22,6 +22,8 @@ export abstract class Controller {
   public get context(): Context {
     return this._context;
   }
+
+  // TODO: The Controller arguments should be resolved by IoC!
 
   constructor(request: any, response: any, next?: any) {
     this._request = request;

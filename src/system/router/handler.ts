@@ -1,6 +1,11 @@
 import {HttpVerb, ParamType} from "../router/enums";
 import {RouteArea, RequestContext, ReferencedResource, MethodParam, FileParam} from "../router/metadata";
 
+// TODO: Clarify wording: 
+//       RouteHandler ==> RouteAction(Data)
+//       A 'RouteAction(Data)' object describes a action to be execute for specific http requests.
+//       It is created by decorating a method (with @Action or @HttpVerb (GET, POST, PUT usw.)).
+
 export class RouteHandler {
   public name: string;
   public path: string;
@@ -117,6 +122,7 @@ export class RouteHandler {
 
   private createRouteHandler(routeArea: RouteArea, context: RequestContext): any {
 
+    // TODO: The RequestHandler should be resolved by IoC!
     let routeHandler = Object.create(routeArea.targetClass);
     routeArea.targetClass.constructor.apply(routeHandler, [context.request, context.response, context.next]);
 
