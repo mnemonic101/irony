@@ -52,7 +52,7 @@ gulp.task("build-dts", function () {
   ])
     .pipe(tsc(tsProjectForDts))
     .dts
-    .pipe(gulp.dest("lib/typings"));
+    .pipe(gulp.dest("lib"));
 })
 gulp.task("build-package.json", function () {
   var appPackageJson = JSON.parse(fs.readFileSync(__dirname + "/package.json", "utf8"));
