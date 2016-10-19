@@ -12,9 +12,10 @@ export class FileSystemHelper {
 
     let pathSegments: string[] = startpath.split("/");
 
+    // HACK: Hardcoded parts of the path!
     if (relocate) {
+      pathSegments.push("build");
       pathSegments.push("lib");
-      pathSegments.push("src");
     }
 
     let resolvedPath = "";

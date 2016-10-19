@@ -5,7 +5,7 @@
             "name": "Debug Server",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/lib/src/server.js",
+            "program": "${workspaceRoot}/build/lib/server.js",
             "stopOnEntry": false,
             "args": [],
             "cwd": "${workspaceRoot}",
@@ -19,7 +19,7 @@
             },
             "externalConsole": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/lib"
+            "outDir": "${workspaceRoot}/build/lib"
         },
         {
             "name": "Debug Tests",
@@ -39,7 +39,7 @@
             },
             "externalConsole": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/lib"
+            "outDir": "${workspaceRoot}/build/spec"
         },
         {
             "name": "Attach",

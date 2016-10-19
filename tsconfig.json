@@ -6,7 +6,7 @@
     "module": "commonjs",
     "removeComments": true,
     "moduleResolution": "node",
-    "outDir": "lib/",
+    "outDir": "build/lib/",
     "sourceMap": true,
     "declaration": true
   }

@@ -1,4 +1,5 @@
 /node_modules
 /maps
 /lib
+/build
 npm-debug.log
