@@ -6,7 +6,7 @@ var gulp = require("gulp"),
   del = require("del"),
   jasmine = require("gulp-jasmine"),
   tslint = require("gulp-tslint"),
-  tsc = require("gulp-typescript"),
+  typescript = require("gulp-typescript"),
   sourcemaps = require("gulp-sourcemaps");
 
 gulp.task("lint", function () {
@@ -21,8 +21,8 @@ gulp.task("lint", function () {
     .pipe(tslint.report("verbose"));
 });
 
-var tsProjectForJs = tsc.createProject("tsconfig.json");
-var tsProjectForDts = tsc.createProject("tsconfig.json");
+var tsProjectForJs = typescript.createProject("tsconfig.json");
+var tsProjectForDts = typescript.createProject("tsconfig.json");
 gulp.task("build-js", function () {
   return gulp.src([
     "./**/**.ts",
@@ -31,7 +31,7 @@ gulp.task("build-js", function () {
     "!./node_modules/**"
   ])
     .pipe(sourcemaps.init())
-    .pipe(tsc(tsProjectForJs))
+    .pipe(tsProjectForJs(typescript.reporter.longReporter()))
     .js
     .pipe(sourcemaps.write("maps", {
       includeContent: false,
@@ -50,7 +50,7 @@ gulp.task("build-dts", function () {
     "!./lib/**",
     "!./node_modules/**"
   ])
-    .pipe(tsc(tsProjectForDts))
+    .pipe(tsProjectForDts())
     .dts
     .pipe(gulp.dest("lib"));
 })
@@ -98,7 +98,7 @@ gulp.task("build-spec", function (cb) {
     "!./node_modules/**"
   ])
     .pipe(sourcemaps.init())
-    .pipe(tsc(tsProjectForJs))
+    .pipe(tsProjectForJs())
     .js
     .pipe(sourcemaps.write("../maps", {
       includeContent: false,
@@ -111,17 +111,11 @@ gulp.task("build-spec", function (cb) {
     .pipe(gulp.dest("lib"));
 });
 
-gulp.task("tests", ["build-spec"], function () {
-  return gulp.src("./")
-    .pipe(jasmine({ config: require("./spec/support/jasmine.json"), includeStackTrace: true, verbose: true }));
-});
-
 gulp.task("clean-all", function () {
   return del(["./maps", "./lib"]);
 });
 
-//alternative name for the "tests" task
-gulp.task("specs", ["tests"]);
+gulp.task("specs");
 
 gulp.task("server", function () {
   require("./lib/src/server");

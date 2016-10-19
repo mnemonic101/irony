@@ -79,10 +79,10 @@ export class RequestContext {
 }
 
 export abstract class HttpError extends Error {
-  constructor(name: string, public statusCode: number, public message?: string) {
+  constructor(name: string, public statusCode: number, public message: string) {
     super(message);
     this.name = name;
-    this.stack = (<any>new Error()).stack;
+    this.stack = (<any> new Error()).stack;
   }
 }
 
