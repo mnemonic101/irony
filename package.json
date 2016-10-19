@@ -29,10 +29,10 @@
     "typescript": "^2.0.3"
   },
   "main": "build/lib/system/index.js",
-  "typings": "source/lib/system/index.d.ts",
+  "typings": "build/typings/system/index.d.ts",
   "directories": {
     "doc": "doc",
-    "lib": "lib/src"
+    "lib": "build/lib"
   },
   "scripts": {
     "test": "gulp specs",

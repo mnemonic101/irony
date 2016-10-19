@@ -53,7 +53,7 @@ gulp.task("build-package.json", function () {
     "author": appPackageJson.author,
     "repository": appPackageJson.repository,
     "main": "system/index.js",      // TODO: generate this from app package.json
-    "typings": "system/index.d.ts", // TODO: generate this from app package.json
+    "typings": "../typings/system/index.d.ts", // TODO: generate this from app package.json
     "dependencies": appPackageJson.dependencies,
     "keywords": appPackageJson.keywords,
     "license": appPackageJson.license,
