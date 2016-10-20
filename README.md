@@ -57,12 +57,9 @@ import {Controller, Route} from "typescript-mvc";
 export class HelloWorldController extends Controller {
 
   @Route("/")
-  public index(): void {
+  public index(): string {
 
-    this.context.logger.log("Hello World!");
-
-    this.response.writeHead(200, { "Content-Type": "text/plain" });
-    this.response.end("Hello World!");
+    return "Hello World!";
   }
 }
 ```
