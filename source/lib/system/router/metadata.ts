@@ -77,20 +77,3 @@ export class RequestContext {
    */
   public next: any; // TODO: express.NextFunction;
 }
-
-export abstract class HttpError extends Error {
-  constructor(name: string, public statusCode: number, public message: string) {
-    super(message);
-    this.name = name;
-    this.stack = (<any> new Error()).stack;
-  }
-}
-
-export abstract class ReferencedResource {
-  /**
-   * Constructor. Receives the location of the resource.
-   * @param location To be added to the Location header on response
-   * @param statusCode the response status code to be sent
-   */
-  constructor(public location: string, public statusCode: number) { }
-}

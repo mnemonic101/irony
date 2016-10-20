@@ -1,4 +1,11 @@
-import { HttpError } from "./metadata";
+export abstract class HttpError extends Error {
+  constructor(name: string, public statusCode: number, public message: string) {
+    super(message);
+    this.name = name;
+    this.stack = (<any>new Error()).stack;
+  }
+}
+
 
 /**
  * Represents a BAD REQUEST error. The request could not be understood by the 
