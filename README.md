@@ -10,10 +10,10 @@ You will need [`nodejs`](https://nodejs.org/), at least v4.4.7 to run the exampl
 ### TypeScript
 This framework is intended to work with [`TypeScript`](https://www.typescriptlang.org/) as programming language.
 
-```npm install typescript```
+```$ npm install typescript```
 
 ## Install
-```npm install typescript-mvc```
+```$ npm install typescript-mvc```
 
 ## Configuration
 The following TypeScript compilation options are required in your tsconfig.json file:
