@@ -16,7 +16,7 @@ This framework is intended to work with [`TypeScript`](https://www.typescriptlan
 ```$ npm install typescript-mvc```
 
 ## Configuration
-The following TypeScript compilation options are required in your tsconfig.json file:
+The following TypeScript compilation options are required in your `tsconfig.json` file:
 
 ```json
 {
