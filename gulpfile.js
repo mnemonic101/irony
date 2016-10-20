@@ -91,7 +91,3 @@ gulp.task("clean-all", function () {
 });
 
 gulp.task("specs");
-
-gulp.task("server", function () {
-  require("./build/lib/server");
-});
