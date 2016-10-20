@@ -1,15 +1,30 @@
 # typescript-mvc [![Build status](https://travis-ci.org/mnemonic101/typescript-mvc.svg)](https://travis-ci.org/mnemonic101/typescript-mvc)
 **A convention based MVC Framework for TypeScript**
 
+This framework supports you writing Clean Code by implementing some common pattern like AOP, IoC and Convention Over Configuration.
+
+## Configuration
+
+The following TypeScript compilation options are required in your tsconfig.json file:
+
+```typescript
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
 ## Development
 
 ### Compile Source
 
-  $ npm run build
+```$ npm run build```
 
 ### Publish NPM Package
 
-  $ npm version patch|minor|major
+```$ npm version patch|minor|major```
 
 ## Thanksgiving
 
