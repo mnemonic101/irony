@@ -39,7 +39,7 @@
     "build": "gulp build",
     "postinstall": "gulp build",
     "preversion": "npm test",
-    "version": "npm run build", // run: npm version patch|minor|major
+    "version": "npm run build",
     "postversion": "git push && git push --tags && npm publish build/lib/"
   },
   "keywords": [
