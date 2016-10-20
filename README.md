@@ -2,9 +2,13 @@
 **A simple MVC Framework for TypeScript**
 
 ## Development
-### Publish NPM Package
+
+### Compile Source
 
   $ npm run build
+
+### Publish NPM Package
+
   $ npm version patch|minor|major
 
 ## License
