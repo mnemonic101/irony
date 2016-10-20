@@ -12,7 +12,7 @@ export class Settings {
   private defaultHostname: string = "127.0.0.1";
   private defaultPort: number = 80;
   private defaultRoot: string = "/";
-  private defaultBasePath: string = "/lib/src";
+  private defaultBasePath: string = "/build/lib"; // HACK: Hardcoded parts of the path!
 
   private _protocol: string;
   public get protocol(): string {

@@ -29,7 +29,7 @@
     "typescript": "^2.0.3"
   },
   "main": "build/lib/system/index.js",
-  "typings": "build/typings/system/index.d.ts",
+  "typings": "build/lib/system/index.d.ts",
   "directories": {
     "doc": "doc",
     "lib": "build/lib"
@@ -37,9 +37,10 @@
   "scripts": {
     "test": "gulp specs",
     "build": "gulp build",
+    "postinstall": "gulp build",
     "preversion": "npm test",
     "version": "npm run build",
-    "postversion": "git push && git push --tags && npm publish lib/src/"
+    "postversion": "git push && git push --tags && npm publish build/lib/"
   },
   "keywords": [
     "TypeScript",

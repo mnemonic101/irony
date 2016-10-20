@@ -20,29 +20,35 @@ gulp.task("lint", function () {
     .pipe(tslint.report("verbose"));
 });
 
-var tsProjectForJs = ts.createProject("tsconfig.json");
-var tsProjectForDts = ts.createProject("tsconfig.json");
-gulp.task("build-js", function () {
-  var tsResult = gulp.src([
-    "source/lib/**/*.ts",
-    "typings/**.d.ts",
-    "!./spec/**",
-    "!./lib/**",
-    "!./node_modules/**"
-  ])
+var sourceMapsConfig = {
+  includeContent: false,
+  mapSources: function (sourcePath) {
+    return '../../' + sourcePath;
+  }
+};
+
+var tsProject = ts.createProject("tsconfig.json");
+
+function build(sourcePath, base, targetPath) {
+  var tsResult = gulp.src(sourcePath, { base: base })
     .pipe(sourcemaps.init())
-    .pipe(tsProjectForJs(ts.reporter.longReporter()));
+    .pipe(tsProject(ts.reporter.longReporter()));
 
   return merge([
     tsResult.dts
-      .pipe(gulp.dest("build/typings")),
+      .pipe(gulp.dest("build/")),
     tsResult.js
-      .pipe(sourcemaps.write("../maps", {
-        includeContent: false
-      }))
-      .pipe(gulp.dest("build/lib"))
+      .pipe(sourcemaps.write(".", sourceMapsConfig))
+      .pipe(gulp.dest("build/"))
   ]);
-})
+}
+
+gulp.task("build-spec", function () {
+  return build(["source/**/*.ts", "typings/**.d.ts", "!./node_modules/**"], "./source", "");
+});
+gulp.task("build-lib", function () {
+  return build(["source/lib/**/*.ts", "typings/**.d.ts", "!./node_modules/**"], "./source", "lib");
+});
 
 gulp.task("build-package.json", function () {
   var appPackageJson = JSON.parse(fs.readFileSync(__dirname + "/package.json", "utf8"));
@@ -53,7 +59,7 @@ gulp.task("build-package.json", function () {
     "author": appPackageJson.author,
     "repository": appPackageJson.repository,
     "main": "system/index.js",      // TODO: generate this from app package.json
-    "typings": "../typings/system/index.d.ts", // TODO: generate this from app package.json
+    "typings": "system/index.d.ts", // TODO: generate this from app package.json
     "dependencies": appPackageJson.dependencies,
     "keywords": appPackageJson.keywords,
     "license": appPackageJson.license,
@@ -75,7 +81,7 @@ gulp.task("copy", function () {
 gulp.task("build", function (cb) {
   return runSequence(
     "clean-all",
-    ["build-js", "copy", "build-package.json"],
+    ["build-lib", "copy", "build-package.json"],
     cb
   );
 });
