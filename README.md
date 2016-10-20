@@ -65,6 +65,8 @@ export class HelloWorldController extends Controller {
 ```
 Place the controller file in a folder called ***controller*** and everything will be wired up automatically.
 
+Start your favorite web browser and enter the url `http://127.0.0.1/` to see your greetings.  
+
 ### Settings
 
 You can change default values that are not easy to define by convention, with custom settings.
