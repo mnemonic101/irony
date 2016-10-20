@@ -4,14 +4,18 @@
 This framework supports you writing Clean Code by implementing some common pattern like AOP, IoC and Convention Over Configuration.
 
 ## Prerequisites
+### Node.js
+You will need [`nodejs`](https://nodejs.org/), at least v4.4.7 to run the examples.
 
-You will need [`nodejs`](https://nodejs.org/), at least v4.4.7.
-
+### TypeScript
 This framework is intended to work with [`TypeScript`](https://www.typescriptlang.org/) as programming language.
+
 ```npm install typescript```
 
-## Configuration
+## Install
+```npm install typescript-mvc```
 
+## Configuration
 The following TypeScript compilation options are required in your tsconfig.json file:
 
 ```json
@@ -24,7 +28,6 @@ The following TypeScript compilation options are required in your tsconfig.json 
 ```
 
 ## Usage
-
 ### Server
 
 To create a new web application, you need a server.
@@ -81,7 +84,6 @@ Create a `settings.json` file that could contain the following lines:
 Place the settings file in your project root for now. 
 
 ## Development
-
 ### Compile Source
 
 ```$ npm run build```
