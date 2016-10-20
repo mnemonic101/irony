@@ -63,13 +63,13 @@ export class HelloWorldController extends Controller {
   }
 }
 ```
-Place the controller file in a folder called ***controller*** and everything will be wired up automatically.
+Place the file in a folder called ***controller*** and everything will be wired up automatically.
 
 Transpile, start your favorite web browser and enter the url `http://127.0.0.1/` to see your greetings.  
 
 ### Settings
 
-You can change default values that are not easy to define by convention, with custom settings.
+You can change default values that are not easy to define by conventions, with custom settings.
 Create a `settings.json` file that could contain the following lines:  
 
 ```json
@@ -93,8 +93,8 @@ Place the settings file in your project root for now.
 
 ## Thanksgiving
 
-I would like to thank [thiagobustamante](https://github.com/thiagobustamante) for his realy inspiring work on [typescript-mvc](https://github.com/thiagobustamante/typescript-rest)!
-This project started as a simple fork of [typescript-mvc](https://github.com/thiagobustamante/typescript-rest). I realy liked it, but then I started refactoring the code. I wanted it to be more modular and convention besed. Also I wanted to use the [typescript-ioc](https://github.com/thiagobustamante/typescript-ioc), which at the point of forking where not easily manageable. Evenmore at this time the code was written for ES6. In the end there was not much that I could have been back-merged such easily.
+I would like to thank [thiagobustamante](https://github.com/thiagobustamante) for his realy inspiring work on [typescript-rest](https://github.com/thiagobustamante/typescript-rest)!
+This MVC Framework for TypeScript started as a fork of [typescript-rest](https://github.com/thiagobustamante/typescript-rest). I realy liked it, but then I started refactoring the code. I wanted it to be more modular and convention besed. Also I wanted to use the [typescript-ioc](https://github.com/thiagobustamante/typescript-ioc), which at the point of forking where not easily manageable. Evenmore at this time the code was written for ES6. In the end there was not much that I could have been back-merged such easily.
 
 ## License
 
