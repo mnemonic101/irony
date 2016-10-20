@@ -4,7 +4,7 @@
 ## Development
 ### Publish NPM Package
 
-  $ npm build
+  $ npm run build
   $ npm version patch|minor|major
 
 ## License
