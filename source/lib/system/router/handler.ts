@@ -1,5 +1,6 @@
 import {HttpVerb, ParamType} from "../router/enums";
-import {RouteArea, RequestContext, ReferencedResource, MethodParam, FileParam} from "../router/metadata";
+import {RouteArea, RequestContext, MethodParam, FileParam} from "../router/metadata";
+import {ReferencedResource} from "../router/resources";
 
 // TODO: Clarify wording: 
 //       RouteHandler ==> RouteAction(Data)
@@ -46,7 +47,6 @@ export class RouteHandler {
 
     // Call controllers action method
     let result = this.routeArea.targetClass.constructor.prototype[this.name].apply(this.handler, args);
-
 
     this.processResponseHeaders(this, this.context);
     this.sendValue(result, this.context.response, this.context.next);
