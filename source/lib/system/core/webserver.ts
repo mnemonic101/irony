@@ -213,8 +213,8 @@ export abstract class WebServer {
     this.logger.log("Task executed", task.name);
   }
   private onTaskError(task: any): void {
-    this.logger.log("Task failed", task.name, task.error);
-    throw task.error;
+    this.logger.log("Task failed", task.name, task.error, task.error.stack);
+    throw new Error(task.error);
   }
 
   public onBeforeServerStart(): void {
