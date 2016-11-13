@@ -41,8 +41,25 @@ export abstract class WebServer {
 
   public execute() {
 
+    this.initializeHooks();
     this.initializeSystem();
     this.initializeApplication();
+  }
+
+  private initializeHooks() {
+    const regEx: RegExp = /(-?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)((?:[\+\-]\d{2}:\d{2})|UTC|GMT|Z) :: /;
+
+    (<any> process.stdout).write = (write => {
+      return (...args) => {
+        let text = args[0];
+        if (text.match(regEx)) {
+          write.apply(process.stdout, args);
+        } else {
+          this.logger.log(text);
+        }
+      };
+    })(process.stdout.write);
+
   }
 
   private initializeSystem() {
