@@ -12,6 +12,37 @@ export abstract class IAdapter {
 
 export abstract class ILogger {
   public abstract log(message?: any, ...optionalParams: any[]): void;
+  public abstract debug(message?: any, ...optionalParams: any[]): void;
+  public abstract info(message?: any, ...optionalParams: any[]): void;
+  public abstract warn(message?: any, ...optionalParams: any[]): void;
+  public abstract error(message?: any, ...optionalParams: any[]): void;
+  public abstract fatal(message?: any, ...optionalParams: any[]): void;
+  public abstract isLogLine(message: string): boolean;
+}
+
+export enum LogLevel {
+  Log = 1,
+  Debug,
+  Info,
+  Warn,
+  Error,
+  Fatal,
+  Off
+}
+
+export enum LogSeverity {
+  Normal,
+  Info,
+  Warn,
+  Error
+}
+
+export interface ILogData {
+  message: string;
+  arguments: any;
+  timestamp: Date;
+  severity: LogSeverity;
+  level: LogLevel;
 }
 
 import * as http from "http";

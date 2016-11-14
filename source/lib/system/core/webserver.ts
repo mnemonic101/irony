@@ -4,7 +4,7 @@ import { Promise } from "../core";
 
 import { RouteRegistrar } from "../router/registrar";
 
-import { ILogger, IFramework, IDataAdapter, ITask } from "../core/interfaces";
+import { ILogger, /*LogLevel,*/ IFramework, IDataAdapter, ITask } from "../core/interfaces";
 import { Context } from "../core/context";
 import { Configuration } from "../config/configuration";
 
@@ -22,7 +22,7 @@ export abstract class WebServer {
     }
   }
 
-  private logger: ILogger = new IntermediateLogger({ bufferLogs: true });
+  private logger: ILogger = new IntermediateLogger({ bufferLogs: true/*, level: LogLevel.Log*/ });
 
   private _context: Context;
   public get context(): Context {
@@ -47,15 +47,13 @@ export abstract class WebServer {
   }
 
   private initializeHooks() {
-    const regEx: RegExp = /(-?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)((?:[\+\-]\d{2}:\d{2})|UTC|GMT|Z) :: /;
-
     (<any> process.stdout).write = (write => {
       return (...args) => {
-        let text = args[0];
-        if (text.match(regEx)) {
+        let message = args[0];
+        if (this.logger.isLogLine(message)) {
           write.apply(process.stdout, args);
         } else {
-          this.logger.log(text);
+          this.logger.log(message);
         }
       };
     })(process.stdout.write);
