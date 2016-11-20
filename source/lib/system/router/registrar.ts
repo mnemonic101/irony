@@ -1,13 +1,13 @@
-import {AutoWired, Inject, Singleton} from "../core/factory";
-import {Context} from "../core/context";
+import { AutoWired, Inject, Singleton } from "../core/factory";
+import { Context } from "../core/context";
 
-import {HttpVerb} from "../router/enums";
-import {RouteArea} from "../router/metadata";
+import { HttpVerb } from "../router/enums";
+import { RouteArea } from "../router/metadata";
 
-import {RouteHandler} from "../router/handler";
+import { RouteHandler } from "../router/handler";
 
-import {IRouter} from "../core/interfaces";
-import {Set, StringMap} from "../core/utils";
+import { IRouter } from "../core/interfaces";
+import { Set, StringMap } from "../core/utils";
 
 import * as StringUtils from "underscore.string";
 
@@ -75,6 +75,15 @@ export class RouteRegistrar {
           });
         }
       }
+    }
+
+    // TODO: Enable error handlers!
+    // HACK: Hardcoded error handler:
+    if (path === "/2") {
+      this.router.addMiddleware(null, (err, req, res, next) => {
+        console.error(err.stack);
+        res.status(500).send(err.stack);
+      });
     }
 
   }

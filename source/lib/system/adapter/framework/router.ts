@@ -25,7 +25,11 @@ export class RouterAdapter implements IRouter {
 
   public addMiddleware(path: string, handler: coreExpress.RequestHandler): void {
     this.context.logger.log("addMiddleware => [%s]", path );
-    this.router.use(path, handler);
+    if (path !== null && path !== undefined && path !== "") {
+      this.router.use(path, handler);
+    } else {
+      this.router.use(handler);
+    }
   }
 
   public addRequestHandler(path: string, handler: coreExpress.RequestHandler): void {

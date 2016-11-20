@@ -1,3 +1,11 @@
+export class ColorHelper {
+  public containsColorCode(text: string): boolean {
+    throw new Error("Not implemented yet!");
+  }
+  public ensureResetColorCode(text: string): string {
+    throw new Error("Not implemented yet!");
+  }
+}
 
 export class TextAttributes {
   public static reset: string = "\x1b[0m"; // All attributes off(color at startup)
