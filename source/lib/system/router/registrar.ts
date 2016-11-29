@@ -81,7 +81,7 @@ export class RouteRegistrar {
     // HACK: Hardcoded error handler:
     if (path === "/2") {
       this.router.addMiddleware(null, (err, req, res, next) => {
-        console.error(err.stack);
+        this.context.logger.error(err.stack);
         res.status(500).send(err.stack);
       });
     }
