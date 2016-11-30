@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "es6-promise": "registry:npm/es6-promise#3.0.0+20160723033700",
-    "typedjson": "npm:typedjson"
+    "typedjson-npm": "npm:typedjson-npm"
   }
 }
