@@ -72,7 +72,7 @@ export class Adapter implements ILogger {
     this.writeLog(logData.level, logData.severity, logData.message, logData.optionalParams);
   }
 
-  private writeLog(level: LogLevel, severity: LogSeverity, message?: any, ...optionalParams): void {
+  private async writeLog(level: LogLevel, severity: LogSeverity, message?: any, ...optionalParams): void {
 
     // Fast exit!
     if (level < this.config.level) return;
@@ -80,7 +80,7 @@ export class Adapter implements ILogger {
     // HACK! Deadloop possible!!! 
     // TODO: Make logger use deferred execution.
     // TODO: Find out how to handle concurrent log calls best. Is Array thread-safe?
-    while (this.isFlushing) { ; }
+    // while (this.isFlushing) { ; }
 
     this.logBuffer.push({
       message: message,
@@ -92,7 +92,7 @@ export class Adapter implements ILogger {
     });
 
     if (!this.config.bufferLogs) {
-      this.flushBuffer(this.logger);
+      await this.flushBuffer(this.logger);
     }
   }
 
@@ -116,18 +116,19 @@ export class Adapter implements ILogger {
     logEntry += logData.timestamp.toISOString();
     if (logData.severity === LogSeverity.Log) logEntry += AnsiColorCodes.TextAttributes.reset;
     logEntry += logData.config.delimiter;
+    logEntry += process.pid;
+    logEntry += logData.config.delimiter;
     logEntry += LogLevel[logData.level];
     logEntry += logData.config.delimiter;
     logEntry += logData.message;
     if (logData.severity !== LogSeverity.Log) logEntry += AnsiColorCodes.TextAttributes.reset;
 
-    logEntry = logEntry.replace(/\s+/g, " ");
+    logEntry = logEntry.replace(/\s+/g, " ").replace(process.cwd(), ".");
 
     console.log(logEntry, logData.optionalParams);
   }
 
   public flushBuffer(logger: (logData: ILogData) => void) {
-
     this.isFlushing = true;
     while (this.logBuffer.length !== 0) {
       let logData = this.logBuffer.shift();
