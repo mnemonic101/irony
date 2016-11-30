@@ -13,25 +13,25 @@ export interface ILogData {
 export class Adapter implements ILogger {
 
   private config: {
-      bufferLogs?: boolean,
-      level?: LogLevel,
-      delimiter?: string
-    };
+    bufferLogs?: boolean,
+    level?: LogLevel,
+    delimiter?: string
+  };
   private isFlushing: boolean = false;
   public logBuffer: ILogData[] = [];
 
   constructor(config: {} = {}) {
     let {
-    bufferLogs = false,
-    level = LogLevel.Log,
-    delimiter = " | " }: {
-      bufferLogs?: boolean,
-      level?: LogLevel,
-      delimiter?: string
-    } = config;
+      bufferLogs = false,
+      level = LogLevel.Log,
+      delimiter = " | " }: {
+        bufferLogs?: boolean,
+        level?: LogLevel,
+        delimiter?: string
+      } = config;
 
-    this.config = {bufferLogs: bufferLogs, level: level, delimiter: delimiter};
-   }
+    this.config = { bufferLogs: bufferLogs, level: level, delimiter: delimiter };
+  }
 
   public isLogLine(message: string): boolean {
     // TODO: Create regular expression for log line matching dynamically (e.g. delimiter).
@@ -39,28 +39,37 @@ export class Adapter implements ILogger {
     return message.match(regEx) != null;
   }
 
-  public log(message?: any, ...optionalParams): void {
-    this.writeLog(LogLevel.Log, LogSeverity.Normal, message, optionalParams);
+  public log(message: any, ...optionalParams): void {
+    // TODO: implement object formatter for ILogger
+    if (message instanceof Object && !!(message["message"])) {
+      this.writeLogData(message as ILogData);
+    } else {
+      this.writeLog(LogLevel.Log, LogSeverity.Log, message, optionalParams);
+    }
   }
 
-  public debug(message?: any, ...args): void {
-    this.writeLog(LogLevel.Debug, LogSeverity.Normal, message, args);
+  public debug(message: any, ...args): void {
+    this.writeLog(LogLevel.Debug, LogSeverity.Log, message, args);
   }
 
-  public info(message?: any, ...args): void {
+  public info(message: any, ...args): void {
     this.writeLog(LogLevel.Info, LogSeverity.Info, message, args);
   }
 
-  public warn(message?: any, ...args): void {
+  public warn(message: any, ...args): void {
     this.writeLog(LogLevel.Warn, LogSeverity.Warn, message, args);
   }
 
-  public error(message?: any, ...args): void {
+  public error(message: any, ...args): void {
     this.writeLog(LogLevel.Error, LogSeverity.Error, message, args);
   }
 
-  public fatal(message?: any, ...args): void {
+  public fatal(message: any, ...args): void {
     this.writeLog(LogLevel.Fatal, LogSeverity.Error, message, args);
+  }
+
+  private writeLogData(logData: ILogData) {
+    this.writeLog(logData.level, logData.severity, logData.message, logData.optionalParams);
   }
 
   private writeLog(level: LogLevel, severity: LogSeverity, message?: any, ...optionalParams): void {
@@ -97,7 +106,7 @@ export class Adapter implements ILogger {
         logEntry += AnsiColorCodes.Foreground.lightYellow;
         break;
       case LogSeverity.Info:
-        logEntry += AnsiColorCodes.Foreground.lightBlue;
+        logEntry += AnsiColorCodes.Foreground.lightCyan;
         break;
       default:
         logEntry += AnsiColorCodes.Foreground.lightGray;
@@ -105,12 +114,12 @@ export class Adapter implements ILogger {
     }
 
     logEntry += logData.timestamp.toISOString();
-    if (logData.severity === LogSeverity.Normal) logEntry += AnsiColorCodes.TextAttributes.reset;
+    if (logData.severity === LogSeverity.Log) logEntry += AnsiColorCodes.TextAttributes.reset;
     logEntry += logData.config.delimiter;
     logEntry += LogLevel[logData.level];
     logEntry += logData.config.delimiter;
     logEntry += logData.message;
-    if (logData.severity !== LogSeverity.Normal) logEntry += AnsiColorCodes.TextAttributes.reset;
+    if (logData.severity !== LogSeverity.Log) logEntry += AnsiColorCodes.TextAttributes.reset;
 
     logEntry = logEntry.replace(/\s+/g, " ");
 

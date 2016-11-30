@@ -15,18 +15,18 @@ import * as path from "path";
 
 export abstract class WebServer {
 
-  private static _instance: WebServer;
+  private static instance: WebServer;
   public static start() {
-    if (WebServer._instance == null) {
-      WebServer._instance = Container.get(WebServer);
+    if (WebServer.instance == null) {
+      WebServer.instance = Container.get(WebServer);
     }
   }
 
   private logger: ILogger = new IntermediateLogger({ bufferLogs: true/*, level: LogLevel.Log*/ });
 
-  private _context: Context;
+  private internalContext: Context;
   public get context(): Context {
-    return this._context;
+    return this.internalContext;
   }
 
   private config: Configuration;
@@ -34,7 +34,7 @@ export abstract class WebServer {
   private tasks: any[] = [];
 
   constructor() {
-    this.logger.log("Application is starting...", typeof (this));
+    this.logger.info("Application is starting...", typeof (this));
 
     this.execute();
   }
@@ -57,7 +57,6 @@ export abstract class WebServer {
         }
       };
     })(process.stdout.write);
-
   }
 
   private initializeSystem() {
@@ -138,7 +137,7 @@ export abstract class WebServer {
     return modules;
   }
 
-  private resolveModulePath(path: string, filename: string): string[] {
+  private resolveModulePath(startPath: string, filename: string): string[] {
 
     let paths: string[] = [];
 
@@ -146,27 +145,27 @@ export abstract class WebServer {
     // TODO: Create a strategy to search folders!
 
     let filePath = (filename !== "") ? "/" + filename : "";
-    if (path.indexOf(this.config.settings.basePath) === -1) {
+    if (startPath.indexOf(this.config.settings.basePath) === -1) {
       let foldersToSearch: Array<string> = [];
 
-      foldersToSearch.push(this.config.coreBasePath + "/system/" + path);
-      foldersToSearch.push(this.config.coreBasePath + "/" + path);
-      foldersToSearch.push(this.config.appBasePath + "/system/" + path);
-      foldersToSearch.push(this.config.appBasePath + "/" + path);
+      foldersToSearch.push(this.config.coreBasePath + "/system/" + startPath);
+      foldersToSearch.push(this.config.coreBasePath + "/" + startPath);
+      foldersToSearch.push(this.config.appBasePath + "/system/" + startPath);
+      foldersToSearch.push(this.config.appBasePath + "/" + startPath);
 
       let newPath = "";
       while (foldersToSearch.length !== 0) {
 
         newPath = foldersToSearch.pop();
         if (FileSystemHelper.fileOrFolderExists(newPath + filePath)) {
-          path = newPath;
+          startPath = newPath;
 
-          let absoluteFilePath: string = path + filePath;
+          let absoluteFilePath: string = startPath + filePath;
           paths.push(fs.realpathSync(absoluteFilePath));
         }
       }
       if (paths.length === 0) {
-        throw new Error("Path could not be determined. Path [" + path + "], File [" + filename + "].");
+        throw new Error("Path could not be determined. Path [" + startPath + "], File [" + filename + "].");
       }
     }
 
@@ -186,7 +185,7 @@ export abstract class WebServer {
   }
 
   private initializeContext(): void {
-    this._context = Container.get(Context);
+    this.internalContext = Container.get(Context);
 
     this.switchLogger();
   }
@@ -196,8 +195,8 @@ export abstract class WebServer {
     let logger = <IntermediateLogger> this.logger;
     this.logger = this.context.logger;
 
-    logger.flushBuffer((logData) => {
-      this.logger.log(logData.message, logData.optionalParams);
+    logger.flushBuffer(logData => {
+      this.logger.log(logData);
     });
   }
 
@@ -228,7 +227,7 @@ export abstract class WebServer {
     this.logger.log("Task executed", task.name);
   }
   private onTaskError(task: any): void {
-    this.logger.log("Task failed", task.name, task.error, task.error.stack);
+    this.logger.warn("Task failed", task.name, task.error, task.error.stack);
     throw new Error(task.error);
   }
 
@@ -250,12 +249,8 @@ export abstract class WebServer {
   }
 
   private onServerStarted() {
-    let url = this.context.settings.protocol
-      + "://" + this.context.settings.hostname
-      + ":" + this.context.settings.port
-      + this.context.settings.root;
-
-    this.logger.log("Application Web Server is running at", url);
+    let url = this.context.settings.rootUrl;
+    this.logger.info("Application Web Server is running at", url);
 
     this.onAfterServerStart();
   }

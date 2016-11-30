@@ -9,20 +9,19 @@ export abstract class IAdapter {
   public name: string;
 }
 
-
 export abstract class ILogger {
-  public abstract log(message?: any, ...optionalParams: any[]): void;
-  public abstract debug(message?: any, ...optionalParams: any[]): void;
-  public abstract info(message?: any, ...optionalParams: any[]): void;
-  public abstract warn(message?: any, ...optionalParams: any[]): void;
-  public abstract error(message?: any, ...optionalParams: any[]): void;
-  public abstract fatal(message?: any, ...optionalParams: any[]): void;
+  public abstract log(message: any, ...optionalParams: any[]): void;
+  public abstract debug(message: any, ...optionalParams: any[]): void;
+  public abstract info(message: any, ...optionalParams: any[]): void;
+  public abstract warn(message: any, ...optionalParams: any[]): void;
+  public abstract error(message: any, ...optionalParams: any[]): void;
+  public abstract fatal(message: any, ...optionalParams: any[]): void;
   public abstract isLogLine(message: string): boolean;
 }
 
 export enum LogLevel {
-  Log = 1,
-  Debug,
+  Debug = 1,
+  Log,
   Info,
   Warn,
   Error,
@@ -31,7 +30,7 @@ export enum LogLevel {
 }
 
 export enum LogSeverity {
-  Normal,
+  Log,
   Info,
   Warn,
   Error
@@ -74,7 +73,6 @@ export abstract class IDataAdapter<T> {
 export abstract class IDataContext {
   public provider: any;
 }
-
 
 export interface TaskFinishedHandler {
   (error: any, data: any): void;
