@@ -38,9 +38,9 @@ export class FileSystemHelper {
   }
 
   public static locateAndReadFile(
-    filename: string, relocate?: boolean, startpath?: string, searchUp?: boolean): Buffer {
-    let libRoot = FileSystemHelper.locateFolderOf(filename, relocate, startpath, searchUp);
-    let buffer: Buffer = fs.readFileSync(libRoot + "/" + filename);
+    fileName: string, relocate?: boolean, startpath?: string, searchUp?: boolean): Buffer {
+    let folderName = FileSystemHelper.locateFolderOf(fileName, relocate, startpath, searchUp);
+    let buffer: Buffer = fs.readFileSync(folderName + "/" + fileName);
     return buffer;
   }
 

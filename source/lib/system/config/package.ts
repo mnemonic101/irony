@@ -1,6 +1,6 @@
-import {Provided, Singleton, ConfigurationProvider/*, ProvidedByJson*/} from "../core/factory";
+import { Provided, Singleton, ConfigurationProvider/*, ProvidedByJson*/ } from "../core/factory";
 
-import {JsonObject, JsonMember} from "typedjson";
+import { JsonObject, JsonMember } from "typedjson-npm";
 
 @JsonObject
 @Singleton
@@ -8,186 +8,63 @@ import {JsonObject, JsonMember} from "typedjson";
 // TODO: wrap with @ProvidedByJson
 export class Package {
 
-  private _name: string;
-  public get name(): string {
-    return this._name;
-  }
   @JsonMember
-  public set name(v: string) {
-    this._name = v;
-  }
+  public readonly name: String;
 
-  private _version: string;
-  public get version(): string {
-    return this._version;
-  }
   @JsonMember
-  public set version(v: string) {
-    this._version = v;
-  }
+  public readonly version: string;
 
-  private _description: string;
-  public get description(): string {
-    return this._description;
-  }
   @JsonMember
-  public set description(v: string) {
-    this._description = v;
-  }
+  public readonly description: string;
 
-  // TODO: make arrays work with typedjson
-  /*private _keywords: string[];
-  public get keywords(): string[] {
-    return this._keywords;
-  }
-  @JsonMember
-  public set keywords(v: string[]) {
-    this._keywords = v;
-  }*/
+  @JsonMember({ elements: String })
+  public readonly keywords: string[];
 
-  private _homepage: string;
-  public get homepage(): string {
-    return this._homepage;
-  }
   @JsonMember
-  public set homepage(v: string) {
-    this._homepage = v;
-  }
+  public readonly homepage: string;
 
-  private _bugs: { url: string, email: string };
-  public get bugs(): { url: string, email: string } {
-    return this._bugs;
-  }
   @JsonMember
-  public set bugs(v: { url: string, email: string }) {
-    this._bugs = v;
-  }
+  public readonly bugs: { url: string, email: string };
 
-  private _license: string;
-  public get license(): string {
-    return this._license;
-  }
   @JsonMember
-  public set license(v: string) {
-    this._license = v;
-  }
+  public readonly license: string;
 
-  private _author: { name: string, email?: string, url?: string };
-  public get author(): { name: string, email?: string, url?: string } {
-    return this._author;
-  }
   @JsonMember
-  public set author(v: { name: string, email?: string, url?: string }) {
-    this._author = v;
-  }
+  public readonly author: { name: string, email?: string, url?: string };
 
-  // TODO: make arrays work with typedjson
-  /*private _contributors: { name: string, email?: string, url?: string }[];
-  public get contributors(): { name: string, email?: string, url?: string }[] {
-    return this._contributors;
-  }
-  @JsonMember
-  public set contributors(v: { name: string, email?: string, url?: string }[]) {
-    this._contributors = v;
-  }*/
+  @JsonMember({ elements: Object })
+  public readonly contributors: { name: string, email?: string, url?: string }[];
 
-  // TODO: make arrays work with typedjson
-  /*private _files: string[];
-  public get files(): string[] {
-    return this._files;
-  }
-  @JsonMember
-  public set files(v: string[]) {
-    this._files = v;
-  }*/
+  @JsonMember({ elements: String })
+  public readonly files: string[];
 
-  private _main: string;
-  public get main(): string {
-    return this._main;
-  }
   @JsonMember
-  public set main(v: string) {
-    this._main = v;
-  }
+  public readonly main: string;
 
-  private _directories: { lib: string, bin: string, doc: string, example: string };
-  public get directories(): { lib: string, bin: string, doc: string, example: string } {
-    return this._directories;
-  }
   @JsonMember
-  public set directories(v: { lib: string, bin: string, doc: string, example: string }) {
-    this._directories = v;
-  }
+  public readonly directories: { lib: string, bin: string, doc: string, example: string };
 
-  private _repository: string | { type: string, url: string };
-  public get repository(): string | { type: string, url: string } {
-    return this._repository;
-  }
   @JsonMember
-  public set repository(v: string | { type: string, url: string }) {
-    this._repository = v;
-  }
+  public readonly repository: string | { type: string, url: string };
 
-  private _scripts: {};
-  public get scripts(): {} {
-    return this._scripts;
-  }
   @JsonMember
-  public set scripts(v: {}) {
-    this._scripts = v;
-  }
+  public readonly scripts: {};
 
-  private _config: {};
-  public get config(): {} {
-    return this._config;
-  }
   @JsonMember
-  public set config(v: {}) {
-    this._config = v;
-  }
+  public readonly config: {};
 
-  private _dependencies: {};
-  public get dependencies(): {} {
-    return this._dependencies;
-  }
   @JsonMember
-  public set dependencies(v: {}) {
-    this._dependencies = v;
-  }
+  public readonly dependencies: {};
 
-  private _devDependencies: {};
-  public get devDependencies(): {} {
-    return this._devDependencies;
-  }
   @JsonMember
-  public set devDependencies(v: {}) {
-    this._devDependencies = v;
-  }
+  public readonly devDependencies: {};
 
-  private _peerDependencies: {};
-  public get peerDependencies(): {} {
-    return this._peerDependencies;
-  }
   @JsonMember
-  public set peerDependencies(v: {}) {
-    this._peerDependencies = v;
-  }
+  public readonly peerDependencies: {};
 
-  private _bundledDependencies: {};
-  public get bundledDependencies(): {} {
-    return this._bundledDependencies;
-  }
   @JsonMember
-  public set bundledDependencies(v: {}) {
-    this._bundledDependencies = v;
-  }
+  public readonly bundledDependencies: {};
 
-  private _optionalDependencies: {};
-  public get optionalDependencies(): {} {
-    return this._optionalDependencies;
-  }
   @JsonMember
-  public set optionalDependencies(v: {}) {
-    this._optionalDependencies = v;
-  }
+  public readonly optionalDependencies: {};
 }

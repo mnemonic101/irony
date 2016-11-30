@@ -1,8 +1,8 @@
-import {Provided, Provider} from "../factory";
+import { Provided, Provider } from "../factory";
 
-import {FileSystemHelper} from "../../core/utils";
+import { FileSystemHelper } from "../../core/utils";
 
-import {TypedJSON} from "typedjson";
+import { TypedJSON } from "typedjson-npm";
 
 export function ProvidedByJson(): Function {
   return function (target: Function): Function {
@@ -18,8 +18,12 @@ export class ConfigurationProvider implements Provider {
   }
 
   public get(): Object {
-    let name: string = this.type.name.toLowerCase() + ".json";
-    let configJson: Buffer = FileSystemHelper.locateAndReadFile(name);
+    let fileName: string = this.type.name.toLowerCase() + ".json";
+    let configJson: Buffer = FileSystemHelper.locateAndReadFile(fileName);
+
+    let folderName = FileSystemHelper.locateFolderOf(fileName);
+    // TODO: inject logger into ConfigurationProvider
+    console.log("Load configuration: [" + folderName + "/" + fileName + "]");
 
     let config: any = TypedJSON.parse(configJson.toString(), this.type);
 
