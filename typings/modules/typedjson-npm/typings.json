@@ -1,0 +1,10 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "/media/mnemonic/Sink/projects/codemonic.net/worx/disco/nodejs/typescript-mvc/node_modules/typedjson-npm/package.json",
+    "raw": "npm:typedjson-npm",
+    "main": "js/typed-json.js",
+    "version": "0.1.6",
+    "name": "typedjson-npm"
+  }
+}

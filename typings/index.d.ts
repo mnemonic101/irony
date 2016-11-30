@@ -7,4 +7,4 @@
 /// <reference path="globals/underscore.string/index.d.ts" />
 /// <reference path="globals/underscore/index.d.ts" />
 /// <reference path="modules/es6-promise/index.d.ts" />
-/// <reference path="modules/typedjson/index.d.ts" />
+/// <reference path="modules/typedjson-npm/index.d.ts" />
