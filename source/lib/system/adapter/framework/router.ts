@@ -24,7 +24,7 @@ export class RouterAdapter implements IRouter {
   }
 
   public addMiddleware(path: string, handler: coreExpress.RequestHandler): void {
-    this.context.logger.log("addMiddleware => [%s]", path );
+    this.context.logger.log("addMiddleware => ", path );
     if (path !== null && path !== undefined && path !== "") {
       this.router.use(path, handler);
     } else {
@@ -33,7 +33,7 @@ export class RouterAdapter implements IRouter {
   }
 
   public addRequestHandler(path: string, handler: coreExpress.RequestHandler): void {
-    this.context.logger.log("addRequestHandler => [%s]", path );
+    this.context.logger.log("addRequestHandler => ", path );
     this.router.all(path, handler);
   }
   public startWebServer(port: number, hostname: string, callback?: Function): http.Server {
@@ -41,7 +41,7 @@ export class RouterAdapter implements IRouter {
   }
 
   public register(httpVerb: HttpVerb, path: string, handler: any) {
-    this.context.logger.log("register => [%s] [%s]", httpVerb, path );
+    this.context.logger.log("register => ", httpVerb, path );
 
     let args: any[] = [];
     args.push(path);

@@ -61,6 +61,16 @@ export class RouteRegistrar {
   }
 
   public registerHttpHandler(path: string) {
+    // TODO: Enable middleware handlers!
+    // HACK: Hardcoded middleware handler:
+    if (path === "/0") {
+      let timeMeasure = require("response-time");
+      this.router.addMiddleware(null, timeMeasure((request, response, time) => {
+        let message = `Request ${request.method} ${request.url} took ${time}ms`;
+        this.context.logger.debug(message);
+      }));
+    }
+
     // HACK!!!!!!!!!!!!!!!!!
     for (let handler in this.httpHandler) {
       if (this.httpHandler.hasOwnProperty(handler)) {

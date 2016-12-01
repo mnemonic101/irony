@@ -207,6 +207,7 @@ export abstract class WebServer {
   private initializeRoutes(): void {
     let registrar: RouteRegistrar = Container.get(RouteRegistrar);
     // HACK!!!!!!!!!
+    registrar.registerHttpHandler("/0");
     registrar.registerHttpHandler("/1");
     registrar.registerRoutes();
     registrar.registerHttpHandler("/2");

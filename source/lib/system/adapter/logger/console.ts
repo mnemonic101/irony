@@ -37,7 +37,24 @@ export class Adapter implements ILogger {
   }
 
   public debug(message: any, ...args): void {
-    this.writeLog(LogLevel.Debug, LogSeverity.Log, message, args);
+    let coloredMessage = this.colorMessage(message, AnsiColorCodes.Foreground.lightMagenta);
+    this.writeLog(LogLevel.Debug, LogSeverity.Log, coloredMessage, args);
+  }
+
+  private colorMessage(
+    message: string,
+    fgColor?: AnsiColorCodes.Foreground,
+    bgColor?: AnsiColorCodes.Background): string {
+
+    if (!fgColor && !bgColor) return message;
+
+    let coloredMessage = "";
+    if (fgColor) coloredMessage += fgColor;
+    if (bgColor) coloredMessage += bgColor;
+    coloredMessage += message;
+    coloredMessage += AnsiColorCodes.TextAttributes.reset;
+
+    return coloredMessage;
   }
 
   public info(message: any, ...args): void {
