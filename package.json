@@ -10,6 +10,7 @@
   "dependencies": {
     "es6-promise": "^4.0.5",
     "express": "^4.14.0",
+    "response-time": "^2.3.2",
     "typedjson-npm": "^0.1.6",
     "typescript-ioc": "^0.2.4",
     "underscore": "^1.8.3",
