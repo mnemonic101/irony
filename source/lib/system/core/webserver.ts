@@ -1,13 +1,12 @@
-import { Container } from "../core/factory";
+import { Container, Scope } from "../core/factory";
 import { FileSystemHelper } from "../core/utils";
 import { Promise } from "../core";
 
 import { RouteRegistrar } from "../router/registrar";
 
-import { ILogger, /*LogLevel,*/ IFramework, IDataAdapter, ITask } from "../core/interfaces";
+import { ILogger, IFramework, IDataAdapter, ITask } from "../core/interfaces";
 import { Context } from "../core/context";
 import { Configuration } from "../config/configuration";
-
 import { Adapter as IntermediateLogger } from "../adapter/logger";
 
 import * as fs from "fs";
@@ -22,7 +21,7 @@ export abstract class WebServer {
     }
   }
 
-  private logger: ILogger = new IntermediateLogger({ bufferLogs: true/*, level: LogLevel.Log*/ });
+  private logger: ILogger = new IntermediateLogger(true);
 
   private internalContext: Context;
   public get context(): Context {
@@ -47,7 +46,7 @@ export abstract class WebServer {
   }
 
   private initializeHooks() {
-    (<any> process.stdout).write = (write => {
+    (<any>process.stdout).write = (write => {
       return (...args) => {
         let message = args[0];
         if (this.logger.isLogLine(message)) {
@@ -84,16 +83,21 @@ export abstract class WebServer {
 
   private initializeAdapter(): void {
 
-    this.registerAdapter(ILogger, "logger");
+    this.registerAdapter(ILogger, "logger", true);
     this.registerAdapter(IFramework, "framework");
     this.registerAdapter(IDataAdapter, "data");
   }
 
-  private registerAdapter(typeOfAdapter: Function, name?: string): void {
+  private registerAdapter(
+    typeOfAdapter: Function,
+    name?: string,
+    isSingleton: boolean = false): void {
 
-    let modulePath = this.resolveModulePath("/adapter", name);
+    let modulePath: string[] = this.resolveModulePath("/adapter", name);
     let module: any = require(modulePath[0]);
-    Container.bind(typeOfAdapter).to(module.Adapter);
+
+    let config = Container.bind(typeOfAdapter).to(module.Adapter);
+    if (isSingleton) config.scope(Scope.Singleton);
   }
 
   private initializeController(): void {
@@ -192,10 +196,10 @@ export abstract class WebServer {
 
   private switchLogger() {
 
-    let logger = <IntermediateLogger> this.logger;
+    let intermediateLogger = <IntermediateLogger>this.logger;
     this.logger = this.context.logger;
 
-    logger.flushBuffer(logData => {
+    intermediateLogger.flushBuffer(logData => {
       this.logger.log(logData);
     });
   }
@@ -212,7 +216,7 @@ export abstract class WebServer {
     let promises: any[] = [];
 
     this.tasks.forEach(task => {
-      let promise = (<ITask> Container.get(task.instance)).execute();
+      let promise = (<ITask>Container.get(task.instance)).execute();
       promise
         .then((data: any) => { this.onTaskSuccess({ name: task.name, data: data }); })
         .catch((error: any) => { this.onTaskError({ name: task.name, error: error }); });

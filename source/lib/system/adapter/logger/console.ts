@@ -1,4 +1,4 @@
-import { ILogger, LogLevel, LogSeverity } from "../../core/interfaces";
+import { ILogger, LogLevel, LogSeverity, ILoggerConfig } from "../../core/interfaces";
 import * as AnsiColorCodes from "./ansicolorcodes";
 
 export interface ILogData {
@@ -12,30 +12,18 @@ export interface ILogData {
 
 export class Adapter implements ILogger {
 
-  private config: {
-    bufferLogs?: boolean,
-    level?: LogLevel,
-    delimiter?: string
-  };
+  private config: ILoggerConfig;
   private isFlushing: boolean = false;
   public logBuffer: ILogData[] = [];
 
-  constructor(config: {} = {}) {
-    let {
-      bufferLogs = false,
-      level = LogLevel.Log,
-      delimiter = " | " }: {
-        bufferLogs?: boolean,
-        level?: LogLevel,
-        delimiter?: string
-      } = config;
-
-    this.config = { bufferLogs: bufferLogs, level: level, delimiter: delimiter };
+  constructor(bufferLogs: boolean = false) {
+    this.config = { bufferLogs: bufferLogs, level: 1, delimiter: " | " };
   }
 
   public isLogLine(message: string): boolean {
     // TODO: Create regular expression for log line matching dynamically (e.g. delimiter).
-    const regEx: RegExp = /.{0,4}(-?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)((?:[\+\-]\d{2}:\d{2})|UTC|GMT|Z).{0,4} \| /;
+    const regEx: RegExp =
+      /.{0,4}(-?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)((?:[\+\-]\d{2}:\d{2})|UTC|GMT|Z).{0,4} \| /;
     return message.match(regEx) != null;
   }
 
@@ -72,15 +60,10 @@ export class Adapter implements ILogger {
     this.writeLog(logData.level, logData.severity, logData.message, logData.optionalParams);
   }
 
-  private async writeLog(level: LogLevel, severity: LogSeverity, message?: any, ...optionalParams): void {
+  private async writeLog(level: LogLevel, severity: LogSeverity, message: any, ...optionalParams): void {
 
     // Fast exit!
     if (level < this.config.level) return;
-
-    // HACK! Deadloop possible!!! 
-    // TODO: Make logger use deferred execution.
-    // TODO: Find out how to handle concurrent log calls best. Is Array thread-safe?
-    // while (this.isFlushing) { ; }
 
     this.logBuffer.push({
       message: message,

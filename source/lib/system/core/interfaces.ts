@@ -21,12 +21,12 @@ export abstract class ILogger {
 
 export enum LogLevel {
   Debug = 1,
-  Log,
-  Info,
-  Warn,
-  Error,
-  Fatal,
-  Off
+  Log = 2,
+  Info = 3,
+  Warn = 4,
+  Error = 5,
+  Fatal = 6,
+  Off = 9
 }
 
 export enum LogSeverity {
@@ -42,6 +42,12 @@ export interface ILogData {
   timestamp: Date;
   severity: LogSeverity;
   level: LogLevel;
+}
+
+export interface ILoggerConfig {
+  bufferLogs: boolean;
+  level: number;
+  delimiter: string;
 }
 
 import * as http from "http";
