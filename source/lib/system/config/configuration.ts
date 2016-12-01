@@ -8,36 +8,20 @@ import {Settings} from "../config/settings";
 @Singleton
 export class Configuration {
 
-  private _package: Package;
-  public get package(): Package {
-    return this._package;
-  }
+  public readonly package: Package;
 
-  private _settings: Settings;
-  public get settings(): Settings {
-    return this._settings;
-  }
+  public readonly settings: Settings;
 
-  private _appBasePath: string;
-  public get appBasePath(): string {
-    return this._appBasePath;
-  }
+  public readonly appBasePath: string;
 
-  private _coreBasePath: string;
-  public get coreBasePath(): string {
-    return this._coreBasePath;
-  }
+  public readonly coreBasePath: string;
 
   constructor(@Inject pconfig: Package, @Inject sconfig: Settings){
-    this._package = pconfig;
-    this._settings = sconfig;
+    this.package = pconfig;
+    this.settings = sconfig;
 
-    this.checkBasePath();
-  }
-
-  private checkBasePath(): void {
-    this._coreBasePath = FileSystemHelper.locateFolderOf("system", false, __dirname);
-    this._appBasePath = process.cwd() + this.settings.basePath;
+    this.coreBasePath = FileSystemHelper.locateFolderOf("system", false, __dirname);
+    this.appBasePath = process.cwd() + this.settings.basePath;
 
     // TODO: check if base path is given in settings.json or package.json,
     //       and if it is correct!  

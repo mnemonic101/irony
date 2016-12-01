@@ -1,8 +1,9 @@
-import { Provided, Singleton, ConfigurationProvider/*, ProvidedByJson*/ } from "../core/factory";
+import { Provided, AutoWired, Singleton, ConfigurationProvider/*, ProvidedByJson*/ } from "../core/factory";
 
 import { JsonObject, JsonMember } from "typedjson-npm";
 
 @JsonObject
+@AutoWired
 @Singleton
 @Provided(new ConfigurationProvider(Package))
 // TODO: wrap with @ProvidedByJson

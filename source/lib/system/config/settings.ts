@@ -1,8 +1,10 @@
-import {Provided, Singleton, ConfigurationProvider/*, ProvidedByJson*/} from "../core/factory";
+import { Provided, Singleton, AutoWired, ConfigurationProvider/*, ProvidedByJson*/ } from "../core/factory";
+import { ILoggerConfig } from "../core/interfaces";
 
-import {JsonObject, JsonMember} from "typedjson-npm";
+import { JsonObject, JsonMember } from "typedjson-npm";
 
 @JsonObject
+@AutoWired
 @Singleton
 @Provided(new ConfigurationProvider(Settings))
 // TODO: wrap with @ProvidedByJson
@@ -22,6 +24,9 @@ export class Settings {
 
   @JsonMember
   public readonly basePath: string = "/build/lib"; // HACK: Hardcoded parts of the path!
+
+  @JsonMember
+  public readonly logging: ILoggerConfig = { bufferLogs: false, level: 9, delimiter: " | " };
 
   public get rootUrl(): string {
     return this.protocol

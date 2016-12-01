@@ -10,20 +10,11 @@ export class Context {
 
   public routings: { [key: string]: any; } = {};
 
-  private _settings: Settings;
-  public get settings(): Settings {
-    return this._settings;
-  }
+  public readonly settings: Settings;
 
-  private _logger: ILogger;
-  public get logger(): ILogger {
-    return this._logger;
-  }
+  public readonly logger: ILogger;
 
-  private _framework: IFramework;
-  public get framework(): IFramework {
-    return this._framework;
-  }
+  public readonly framework: IFramework;
 
   public get dataProvider(): any {
     let context: IDataContext = Container.get(IDataContext);
@@ -31,11 +22,11 @@ export class Context {
   }
 
   constructor(
+    @Inject settings: Settings,
     @Inject framework: IFramework,
-    @Inject logger: ILogger,
-    @Inject settings: Settings) {
-    this._framework = framework;
-    this._logger = logger;
-    this._settings = settings;
+    @Inject logger: ILogger) {
+    this.settings = settings;
+    this.framework = framework;
+    this.logger = logger;
   }
 }
