@@ -60,7 +60,7 @@ export class Adapter implements ILogger {
     this.writeLog(logData.level, logData.severity, logData.message, logData.optionalParams);
   }
 
-  private async writeLog(level: LogLevel, severity: LogSeverity, message: any, ...optionalParams): void {
+  private writeLog(level: LogLevel, severity: LogSeverity, message: any, ...optionalParams): void {
 
     // Fast exit!
     if (level < this.config.level) return;
@@ -75,7 +75,7 @@ export class Adapter implements ILogger {
     });
 
     if (!this.config.bufferLogs) {
-      await this.flushBuffer(this.logger);
+      process.nextTick(() => { this.flushBuffer(this.logger); });
     }
   }
 
