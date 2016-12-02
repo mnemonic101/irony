@@ -2,11 +2,11 @@ import { Provided, AutoWired, Singleton, ConfigurationProvider/*, ProvidedByJson
 
 import { JsonObject, JsonMember } from "typedjson-npm";
 
-@JsonObject
 @AutoWired
 @Singleton
 @Provided(new ConfigurationProvider(Package))
 // TODO: wrap with @ProvidedByJson
+@JsonObject
 export class Package {
 
   @JsonMember

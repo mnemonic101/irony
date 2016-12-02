@@ -3,11 +3,11 @@ import { ILoggerConfig } from "../core/interfaces";
 
 import { JsonObject, JsonMember } from "typedjson-npm";
 
-@JsonObject
 @AutoWired
 @Singleton
 @Provided(new ConfigurationProvider(Settings))
 // TODO: wrap with @ProvidedByJson
+@JsonObject
 export class Settings {
 
   @JsonMember
@@ -32,6 +32,6 @@ export class Settings {
     return this.protocol
       + "://" + this.hostname
       + ":" + this.port
-      + this.root + "/";
+      + this.root;
   }
 }
