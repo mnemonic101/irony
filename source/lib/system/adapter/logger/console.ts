@@ -3,7 +3,7 @@ import * as AnsiColorCodes from "./ansicolorcodes";
 
 export interface ILogData {
   message: string;
-  optionalParams: any;
+  args: any[];
   timestamp: Date;
   severity: LogSeverity;
   level: LogLevel;
@@ -27,16 +27,16 @@ export class Adapter implements ILogger {
     return message.match(regEx) != null;
   }
 
-  public log(message: any, ...optionalParams): void {
+  public log(message: any, ...args: any[]): void {
     // TODO: implement object formatter for ILogger
     if (message instanceof Object && !!(message["message"])) {
       this.writeLogData(message as ILogData);
     } else {
-      this.writeLog(LogLevel.Log, LogSeverity.Log, message, optionalParams);
+      this.writeLog(LogLevel.Log, LogSeverity.Log, message, args);
     }
   }
 
-  public debug(message: any, ...args): void {
+  public debug(message: any, ...args: any[]): void {
     let coloredMessage = this.colorMessage(message, AnsiColorCodes.Foreground.lightMagenta);
     this.writeLog(LogLevel.Debug, LogSeverity.Log, coloredMessage, args);
   }
@@ -57,34 +57,34 @@ export class Adapter implements ILogger {
     return coloredMessage;
   }
 
-  public info(message: any, ...args): void {
+  public info(message: any, ...args: any[]): void {
     this.writeLog(LogLevel.Info, LogSeverity.Info, message, args);
   }
 
-  public warn(message: any, ...args): void {
+  public warn(message: any, ...args: any[]): void {
     this.writeLog(LogLevel.Warn, LogSeverity.Warn, message, args);
   }
 
-  public error(message: any, ...args): void {
+  public error(message: any, ...args: any[]): void {
     this.writeLog(LogLevel.Error, LogSeverity.Error, message, args);
   }
 
-  public fatal(message: any, ...args): void {
+  public fatal(message: any, ...args: any[]): void {
     this.writeLog(LogLevel.Fatal, LogSeverity.Error, message, args);
   }
 
   private writeLogData(logData: ILogData) {
-    this.writeLog(logData.level, logData.severity, logData.message, logData.optionalParams);
+    this.writeLog(logData.level, logData.severity, logData.message, logData.args);
   }
 
-  private writeLog(level: LogLevel, severity: LogSeverity, message: any, ...optionalParams): void {
+  private writeLog(level: LogLevel, severity: LogSeverity, message: any, ...args: any[]): void {
 
     // Fast exit!
     if (level < this.config.level) return;
 
     this.logBuffer.push({
       message: message,
-      optionalParams: optionalParams,
+      args: args,
       timestamp: new Date(),
       severity: severity,
       level: level,
@@ -125,7 +125,7 @@ export class Adapter implements ILogger {
 
     logEntry = logEntry.replace(/\s+/g, " ").replace(process.cwd(), ".");
 
-    console.log(logEntry, logData.optionalParams);
+    console.log(logEntry, logData.args);
   }
 
   public flushBuffer(logger: (logData: ILogData) => void) {
