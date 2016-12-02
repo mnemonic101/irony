@@ -66,7 +66,7 @@ export class RouteRegistrar {
     if (path === "/0") {
       let timeMeasure = require("response-time");
       this.router.addMiddleware(null, timeMeasure((request, response, time) => {
-        let message = `Request ${request.method} [${request.url}] took [${time}ms]`;
+        let message = `Response time: ${request.method} [${request.url}] [${time}ms]`;
         this.context.logger.debug(message);
       }));
     }
@@ -77,7 +77,7 @@ export class RouteRegistrar {
 
         let routeArea = this.httpHandler[handler];
         if (StringUtils.startsWith(routeArea.path, path)) {
-          this.context.logger.log("registerHttpHandler ==> [%s]", handler);
+          this.context.logger.log(`Handler registered: [${handler.toString()}]`, );
           this.router.addMiddleware("/", (request, response, next) => {
             // TODO: The RequestHandler should be resolved by IoC!
             let routeHandler = Object.create(routeArea.targetClass.prototype);
@@ -103,11 +103,11 @@ export class RouteRegistrar {
     for (let controller in this.routeAreas) {
       if (this.routeAreas.hasOwnProperty(controller)) {
         let routeArea = this.routeAreas[controller];
-        this.context.logger.log("registerController ==> [%s]", controller);
+        this.context.logger.log(`Controller registered: [${controller.toString()}]`);
         for (let method in routeArea.handlers) {
           if (routeArea.handlers.hasOwnProperty(method)) {
             let routeHandler = routeArea.handlers[method];
-            this.context.logger.log("registerAction ==> [%s]", method);
+            this.context.logger.log(`Action registered: [${method.toString()}]`);
             this.buildRoute(routeArea, routeHandler);
           }
         }

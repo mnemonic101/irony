@@ -125,11 +125,9 @@ export abstract class WebServer {
           if (filename.match(/[^\.]*\.js$/i)) {
 
             let fullFilePath: string = path.posix.resolve(fullModulePath, filename);
-            this.logger.log(fullFilePath);
+            this.logger.debug(`Load Module: [${fullFilePath}]`);
 
             let module = require(fullFilePath);
-            this.logger.log(module);
-
             modules.push(module);
           }
         });
