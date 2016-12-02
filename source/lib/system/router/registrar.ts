@@ -66,7 +66,7 @@ export class RouteRegistrar {
     if (path === "/0") {
       let timeMeasure = require("response-time");
       this.router.addMiddleware(null, timeMeasure((request, response, time) => {
-        let message = `Request ${request.method} ${request.url} took ${time}ms`;
+        let message = `Request ${request.method} [${request.url}] took [${time}ms]`;
         this.context.logger.debug(message);
       }));
     }
@@ -90,9 +90,9 @@ export class RouteRegistrar {
     // TODO: Enable error handlers!
     // HACK: Hardcoded error handler:
     if (path === "/2") {
-      this.router.addMiddleware(null, (err, req, res, next) => {
-        this.context.logger.error(err.stack);
-        res.status(500).send(err.stack);
+      this.router.addMiddleware(null, (error, request, response, next) => {
+        this.context.logger.error(error.stack);
+        response.status(500).send(error.stack);
       });
     }
 
