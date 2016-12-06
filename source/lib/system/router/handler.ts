@@ -46,7 +46,7 @@ export class RouteHandler {
     let args = []; /* TODO: this.buildArgumentsList(serviceMethod, context);*/
 
     // Call controllers action method
-    let result = this.routeArea.targetClass.constructor.prototype[this.name].apply(this.handler, args);
+    let result = this.routeArea.targetClass[this.name].apply(this.handler, args);
 
     this.processResponseHeaders(this, this.context);
     this.sendValue(result, this.context.response, this.context.next);
