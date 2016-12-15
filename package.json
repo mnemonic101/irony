@@ -8,6 +8,7 @@
     "url": "https://github.com/mnemonic101/typescript-mvc.git"
   },
   "dependencies": {
+    "body-parser": "^1.15.2",
     "es6-promise": "^4.0.5",
     "express": "^4.14.0",
     "response-time": "^2.3.2",

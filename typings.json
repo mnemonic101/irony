@@ -11,6 +11,7 @@
     "underscore.string": "registry:dt/underscore.string#0.0.0+20160514164108"
   },
   "dependencies": {
+    "body-parser": "registry:dt/body-parser#0.0.0+20160726204056",
     "es6-promise": "registry:npm/es6-promise#3.0.0+20160723033700",
     "typedjson-npm": "npm:typedjson-npm"
   }
