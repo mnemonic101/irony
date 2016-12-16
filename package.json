@@ -1,11 +1,11 @@
 {
-  "name": "typescript-mvc",
-  "description": "A simple MVC Web API Framework for TypeScript",
-  "version": "0.0.6",
+  "name": "irony",
+  "description": "A convention based web application framework for TypeScript",
+  "version": "0.0.1",
   "author": "codemonic.net <info@codemonic.net>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mnemonic101/typescript-mvc.git"
+    "url": "https://github.com/mnemonic101/irony.git"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -46,9 +46,11 @@
   },
   "keywords": [
     "TypeScript",
+    "Service",
     "MVC",
-    "Framework",
-    "Web API"
+    "Web API",
+    "Web Application"
+    "Framework"
   ],
   "license": "MIT"
 }
