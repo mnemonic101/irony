@@ -1,7 +1,7 @@
-# typescript-mvc [![Build status](https://travis-ci.org/mnemonic101/typescript-mvc.svg)](https://travis-ci.org/mnemonic101/typescript-mvc)
-**A convention based MVC Framework for TypeScript**
+# irony [![Build status](https://travis-ci.org/mnemonic101/irony.svg)](https://travis-ci.org/mnemonic101/irony)
+**A convention based web application framework for TypeScript**
 
-This framework supports you writing Clean Code by implementing some common pattern like AOP, IoC and Convention Over Configuration.
+Focus on what matters! The `irony` web application framework supports you on writing clean code for your web application by providing some best practices and pattern, like AOP, IoC and Convention Over Configuration.
 
 ## Prerequisites
 ### Node.js
@@ -13,11 +13,11 @@ This framework is intended to work with [`TypeScript`](https://www.typescriptlan
 ```$ npm install -g typescript```
 
 ## Install
-Create a folder for your new TypeScript MVC application, cd into it and run the commands below:
+Create a folder for your new TypeScript web application, cd into it and run the commands below:
 
 ```$ npm init```
 
-```$ npm install -S typescript-mvc```
+```$ npm install -S irony```
 
 ## Configuration
 The following TypeScript compilation options are required in your `tsconfig.json` file:
@@ -34,11 +34,11 @@ The following TypeScript compilation options are required in your `tsconfig.json
 ## Usage
 ### Server
 
-To create a new web application, you need a server.
+To create a new web application, you need a web server.
 Create a `server.ts` file containing the following lines:  
 
 ```typescript
-import {WebServer} from "typescript-mvc";
+import {WebServer} from "irony";
 
 class Server extends WebServer { }
 
@@ -56,7 +56,7 @@ To handle http requests to your web application, you need a controller.
 Create a `helloworld.ts` file containing the following lines:  
 
 ```typescript
-import {Controller, Route} from "typescript-mvc";
+import {Controller, Route} from "irony";
 
 export class HelloWorldController extends Controller {
 
@@ -98,8 +98,9 @@ Place the settings file in your project root for now.
 ## Thanksgiving
 
 I would like to thank [thiagobustamante](https://github.com/thiagobustamante) for his realy inspiring work on [typescript-rest](https://github.com/thiagobustamante/typescript-rest)!
-This MVC Framework for TypeScript started as a fork of [typescript-rest](https://github.com/thiagobustamante/typescript-rest). I realy liked it, but then I started refactoring the code. I wanted it to be more modular and convention based. Also I wanted to use the [typescript-ioc](https://github.com/thiagobustamante/typescript-ioc) package, which, at the point of forking, was not easy to implement. Evenmore at this time the code was written for ES6, while I needed to target ES5. In the end there was not much that I could have been back-merged such easily.
+
+This web application framework for TypeScript started as a fork of [typescript-rest](https://github.com/thiagobustamante/typescript-rest). I realy liked it, but then I started refactoring the code. I wanted it to become more modular and convention based. Also I wanted to use the [typescript-ioc](https://github.com/thiagobustamante/typescript-ioc) package, which, at the point of forking, was not easy to implement. Evenmore at this time the code was written for ES6, while I needed to target ES5. In the end there was not much that I could have been back-merged, unfortunately.
 
 ## License
 
-[MIT](https://github.com/mnemonic101/typescript-mvc/blob/master/LICENSE)
+[MIT](https://github.com/mnemonic101/irony/blob/master/LICENSE)
