@@ -11,7 +11,9 @@ export class BodyParserHandler extends RequestHandler {
 
     this.context.logger.log("Parse body...");
 
-    bodyParser.text()(request, response, () => {
+    // HACK: parse body as JSON by default.
+    // TODO: enable selective param parsing on controller level with decorators.
+    bodyParser.json()(request, response, () => {
       if (next) next();
       else this.response.end();
     });
