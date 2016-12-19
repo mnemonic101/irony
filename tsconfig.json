@@ -8,6 +8,11 @@
     "moduleResolution": "node",
     "outDir": "build/lib/",
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ]
   }
 }
