@@ -118,9 +118,13 @@ export class RouteRegistrar {
   }
 
   private buildRoute(routeArea: RouteArea, routeHandler: RouteHandler) {
-    let handlerCallback = (req, res, next) => {
+    let handlerCallback = async (req, res, next) => {
       let rh: RouteHandler = routeHandler;
-      rh.execute(req, res, next);
+      try {
+        await rh.execute(req, res, next);
+      } catch (error) {
+        next(error);
+      }
     };
 
     if (!routeHandler.resolvedPath) {
