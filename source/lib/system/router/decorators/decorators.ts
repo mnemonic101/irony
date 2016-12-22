@@ -1,10 +1,10 @@
-import {Container} from "../core/factory";
+import { Container } from "../../core/factory";
 
-import {RouteRegistrar} from "../router/registrar";
-import {HttpVerb, ParamType} from "../router/enums";
+import { RouteRegistrar } from "../../router/registrar";
+import { HttpVerb, ParamType, BodyParserType } from "../../router/enums";
 
-import {RouteArea, MethodParam, FileParam} from "../router/metadata";
-import {RouteHandler} from "../router/handler";
+import { RouteArea, MethodParamData, FileParamData } from "../../router/metadata";
+import { RouteHandler } from "../../router/handler";
 
 export function Handler(path: string) {
 
@@ -56,32 +56,80 @@ function RouteActionDecorator(target: any, propertyKey: string, descriptor: Prop
     }
     routeHandler.name = propertyKey; // ???
   }
-
-  // TODO: process parameters of action method!
-  /*  for (let index = 0; index < descriptor.value.length; index++) {
-      let param = descriptor.value[index];
-      ;
-    }*/
 }
 
-export function Param(name: string) {
+export function PathParam(name: string) {
   return function (target: Object, propertyKey: string, parameterIndex: number) {
     processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.path, name);
   };
 }
 
+export function FileParam(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.file, name);
+  };
+}
+
+export function FilesParam(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.files, name);
+  };
+}
+
+export function QueryParam(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.query, name);
+  };
+}
+
+export function HeaderParam(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.header, name);
+  };
+}
+export function CookieParam(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.cookie, name);
+  };
+}
+
+export function FormParam(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.form, name);
+  };
+}
+
+export function BodyParam() {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.body, name);
+  };
+}
+
+export function Param(name: string) {
+  return function (target: Object, propertyKey: string, parameterIndex: number) {
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.param, name);
+  };
+}
+
 function processDecoratedParameter(
-  target: Object, propertyKey: string, parameterIndex: number, paramType: ParamType, name: string) {
-  // let serviceMethod: metadata.ServiceMethod = InternalServer.registerServiceMethod(target.constructor, propertyKey);
-  /*  if (serviceMethod) { // does not intercept constructor
-      let paramTypes = Reflect.getMetadata("design:paramtypes", target, propertyKey);
-  
-      while (serviceMethod.parameters.length < paramTypes.length) {
-        serviceMethod.parameters.push(new metadata.MethodParam(null,
-          paramTypes[serviceMethod.parameters.length], metadata.ParamType.body));
-      }
-      serviceMethod.parameters[parameterIndex] = new metadata.MethodParam(name, paramTypes[parameterIndex], paramType);
-    }*/
+  target: Object,
+  propertyKey: string,
+  parameterIndex: number,
+  paramType: ParamType,
+  name: string) {
+
+  let registrar: RouteRegistrar = Container.get(RouteRegistrar);
+  let routeHandler: RouteHandler = registrar.addRouteHandler(target.constructor, propertyKey);
+
+  if (routeHandler) { // does not intercept constructor
+    let paramTypes = Reflect.getOwnMetadata("design:paramtypes", target, propertyKey);
+
+    while (routeHandler.parameters.length < paramTypes.length) {
+      routeHandler.parameters.push(new MethodParamData(null,
+        paramTypes[routeHandler.parameters.length], ParamType.body));
+    }
+    routeHandler.parameters[parameterIndex] = new MethodParamData(name, paramTypes[parameterIndex], paramType);
+  }
 }
 
 export function GET(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -130,7 +178,7 @@ function processRouteHandler(target: any, propertyKey: string, routeHandler: Rou
   routeHandler.name = propertyKey;
   let paramTypes = Reflect.getOwnMetadata("design:paramtypes", target, propertyKey);
   while (paramTypes.length > routeHandler.parameters.length) {
-    routeHandler.parameters.push(new MethodParam(null,
+    routeHandler.parameters.push(new MethodParamData(null,
       paramTypes[routeHandler.parameters.length], ParamType.body));
   }
 
@@ -139,13 +187,20 @@ function processRouteHandler(target: any, propertyKey: string, routeHandler: Rou
       routeHandler.mustParseCookies = true;
     }
     else if (param.paramType === ParamType.file) {
-      routeHandler.files.push(new FileParam(param.name, true));
+      routeHandler.files.push(new FileParamData(param.name, true));
     }
     else if (param.paramType === ParamType.files) {
-      routeHandler.files.push(new FileParam(param.name, false));
+      routeHandler.files.push(new FileParamData(param.name, false));
+    }
+    else if (param.paramType === ParamType.query) {
+      routeHandler.acceptMultiTypedParam = true;
+    }
+    else if (param.paramType === ParamType.param) {
+      routeHandler.acceptMultiTypedParam = true;
+      routeHandler.mustParseBody = BodyParserType.JSON;
     }
     else if (param.paramType === ParamType.form) {
-      if (routeHandler.mustParseBody) {
+      if (routeHandler.mustParseBody !== BodyParserType.None) {
         throw Error("Can not use form parameters with a body parameter on the same method.");
       }
       routeHandler.mustParseForms = true;
@@ -154,10 +209,10 @@ function processRouteHandler(target: any, propertyKey: string, routeHandler: Rou
       if (routeHandler.mustParseForms) {
         throw Error("Can not use form parameters with a body parameter on the same method.");
       }
-      if (routeHandler.mustParseBody) {
+      if (routeHandler.mustParseBody !== BodyParserType.None) {
         throw Error("Can not use more than one body parameter on the same method.");
       }
-      routeHandler.mustParseBody = true;
+      routeHandler.mustParseBody = BodyParserType.Text;
     }
   });
 }

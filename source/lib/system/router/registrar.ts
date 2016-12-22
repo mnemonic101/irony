@@ -1,7 +1,7 @@
 import { AutoWired, Inject, Singleton } from "../core/factory";
 import { Context } from "../core/context";
 
-import { HttpVerb } from "../router/enums";
+import { HttpVerb, BodyParserType } from "../router/enums";
 import { RouteArea } from "../router/metadata";
 
 import { RouteHandler } from "../router/handler";
@@ -10,6 +10,8 @@ import { IRouter } from "../core/interfaces";
 import { Set, StringMap } from "../core/utils";
 
 import * as StringUtils from "underscore.string";
+
+import * as bodyParser from "body-parser";
 
 // TODO: Seperate concerns! The RouteRegistrar class has too many responsibilities!
 
@@ -131,7 +133,46 @@ export class RouteRegistrar {
       this.resolveProperties(routeArea, routeHandler);
     }
 
-    this.router.register(routeHandler.httpVerb, routeHandler.resolvedPath, handlerCallback);
+    let middleware: any[] = this.buildServiceMiddleware(routeHandler);
+
+    this.router.register(routeHandler.httpVerb, routeHandler.resolvedPath, handlerCallback, middleware);
+  }
+
+  private buildServiceMiddleware(routeHandler: RouteHandler): any[] {
+    let result: any[] = [];
+
+    /*if (routeHandler.mustParseCookies) {
+      let args = [];
+      if (InternalServer.cookiesSecret) {
+        args.push(InternalServer.cookiesSecret);
+      }
+      if (InternalServer.cookiesDecoder) {
+        args.push({ decode: InternalServer.cookiesDecoder });
+      }
+      result.push(cookieParser.apply(this, args));
+    }*/
+    // TODO: parse XML body
+    if (routeHandler.mustParseBody === BodyParserType.JSON) {
+      result.push(bodyParser.json());
+    } else if (routeHandler.mustParseBody === BodyParserType.Text) {
+      result.push(bodyParser.text({ type: "application/*" }));
+    } else if (routeHandler.mustParseForms || routeHandler.acceptMultiTypedParam) {
+      result.push(bodyParser.urlencoded({ extended: true }));
+    }
+    /*if (routeHandler.files.length > 0) {
+      let options: Array<multer.Field> = new Array<multer.Field>();
+      routeHandler.files.forEach(fileData => {
+        if (fileData.singleFile) {
+          options.push({ "name": fileData.name, "maxCount": 1 });
+        }
+        else {
+          options.push({ "name": fileData.name });
+        }
+      });
+      result.push(this.getUploader().fields(options));
+    }*/
+
+    return result;
   }
 
   private resolveProperties(routeArea: RouteArea, routeHandler: RouteHandler): void {

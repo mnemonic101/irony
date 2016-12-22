@@ -33,14 +33,14 @@ export class RouteArea {
   }
 }
 
-export class FileParam {
+export class FileParamData {
   constructor(
     public name: string,
     public singleFile: boolean) {
   }
 }
 
-export class MethodParam {
+export class MethodParamData {
   constructor(
     public name: string,
     public type: Function,
@@ -55,25 +55,11 @@ export class ResponseData {
 }
 
 export class RequestContext {
-  /**
-   * The resolved language to be used in the current request handling. 
-   */
+
   public language: string;
-  /**
-   * The preferred media type to be used in the current request handling. 
-   */
+  public accept: string;
   public preferredMedia: string;
-  /**
-   * The request object. 
-   */
   public request: any; // TODO: express.Request;
-  /**
-   * The response object 
-   */
   public response: any; // TODO: express.Response; 
-  /**
-   * The next function. It can be used to delegate to the next middleware
-   * registered the processing of the current request. 
-   */
   public next: any; // TODO: express.NextFunction;
 }

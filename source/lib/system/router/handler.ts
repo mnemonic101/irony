@@ -1,5 +1,5 @@
-import { HttpVerb, ParamType } from "../router/enums";
-import { RouteArea, RequestContext, MethodParam, FileParam } from "../router/metadata";
+import { HttpVerb, ParamType, BodyParserType } from "../router/enums";
+import { RouteArea, RequestContext, MethodParamData, FileParamData } from "../router/metadata";
 import { ReferencedResource } from "../router/resources";
 
 // TODO: Clarify wording: 
@@ -12,11 +12,12 @@ export class RouteHandler {
   public path: string;
   public resolvedPath: string;
   public httpVerb: HttpVerb;
-  public parameters: Array<MethodParam> = new Array<MethodParam>();
+  public parameters: Array<MethodParamData> = new Array<MethodParamData>();
+  public files: Array<FileParamData> = new Array<FileParamData>();
   public mustParseCookies: boolean = false;
-  public files: Array<FileParam> = new Array<FileParam>();
-  public mustParseBody: boolean = false;
+  public mustParseBody: BodyParserType = BodyParserType.None;
   public mustParseForms: boolean = false;
+  public acceptMultiTypedParam: boolean = false;
   public languages: Array<string>;
   public accepts: Array<string>;
   public resolvedLanguages: Array<string>;
@@ -24,7 +25,7 @@ export class RouteHandler {
 
   private routeArea: RouteArea;
   private context: RequestContext;
-  private handler: Object;
+  private handler: RouteHandler;
 
   constructor(routeArea: RouteArea) {
     this.routeArea = routeArea;
@@ -42,8 +43,8 @@ export class RouteHandler {
     // Call handlers ctor
     this.handler = this.createRouteHandler(this.routeArea, context);
 
-    // TODO: Automatically bind parameters
-    let args = []; /* TODO: this.buildArgumentsList(serviceMethod, context);*/
+    // Automatically bind parameters
+    let args = this.buildArgumentsList(context);
 
     // Call controllers action method
     let result = this.routeArea.targetClass[this.name].apply(this.handler, args);
@@ -107,6 +108,82 @@ export class RouteHandler {
         }
     }
   }
+
+  private buildArgumentsList(context: RequestContext) {
+    let result: Array<any> = new Array<any>();
+
+    this.parameters.forEach(param => {
+      switch (param.paramType) {
+        case ParamType.path:
+          result.push(this.convertType(context.request.params[param.name], param.type));
+          break;
+        case ParamType.query:
+          result.push(this.convertType(context.request.query[param.name], param.type));
+          break;
+        case ParamType.header:
+          result.push(this.convertType(context.request.header(param.name), param.type));
+          break;
+        case ParamType.cookie:
+          result.push(this.convertType(context.request.cookies[param.name], param.type));
+          break;
+        case ParamType.body:
+          result.push(this.convertType(context.request.body, param.type));
+          break;
+        case ParamType.file:
+          let files: Array<any> = context.request.files[param.name];
+          if (files && files.length > 0) {
+            result.push(files[0]);
+          }
+          break;
+        case ParamType.files:
+          result.push(context.request.files[param.name]);
+          break;
+        case ParamType.form:
+          result.push(this.convertType(context.request.body[param.name], param.type));
+          break;
+        case ParamType.param:
+          let paramValue = context.request.body[param.name] ||
+            context.request.query[param.name];
+          result.push(this.convertType(paramValue, param.type));
+          break;
+        case ParamType.context:
+          result.push(context);
+          break;
+        case ParamType.context_request:
+          result.push(context.request);
+          break;
+        case ParamType.context_response:
+          result.push(context.response);
+          break;
+        case ParamType.context_next:
+          result.push(context.next);
+          break;
+        case ParamType.context_accept:
+          result.push(context.accept);
+          break;
+        case ParamType.context_accept_language:
+          result.push(context.language);
+          break;
+        default:
+          throw Error("Invalid parameter type");
+      }
+    });
+
+    return result;
+  }
+
+  private convertType(paramValue: string, paramType: Function): any {
+    let serializedType = paramType["name"];
+    switch (serializedType) {
+      case "Number":
+        return paramValue ? parseFloat(paramValue) : 0;
+      case "Boolean":
+        return paramValue === "true";
+      default:
+        return paramValue;
+    }
+  }
+
 
   private processResponseHeaders(routeHandler: RouteHandler, context: RequestContext): void {
     if (routeHandler.resolvedLanguages) {

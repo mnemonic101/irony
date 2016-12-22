@@ -40,11 +40,12 @@ export class RouterAdapter implements IRouter {
     return this.router.listen(port, hostname, callback);
   }
 
-  public register(httpVerb: HttpVerb, path: string, handler: any) {
+  public register(httpVerb: HttpVerb, path: string, handler: any, middleware: any[] = []) {
     this.context.logger.log("register => ", httpVerb, path );
 
     let args: any[] = [];
     args.push(path);
+    args.push(middleware);
     args.push(handler);
 
     switch (httpVerb) {

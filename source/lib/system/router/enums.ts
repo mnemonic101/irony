@@ -8,6 +8,12 @@ export enum HttpVerb {
   HEAD
 }
 
+export enum BodyParserType {
+  None,
+  Text,
+  JSON
+}
+
 export enum ParamType {
   path,
   query,
@@ -15,6 +21,7 @@ export enum ParamType {
   cookie,
   form,
   body,
+  param,
   file,
   files,
   context,

@@ -3,7 +3,8 @@ import { Handler } from "../router";
 
 import * as bodyParser from "body-parser";
 
-@Handler("/1" /* HACK!!!!!! */)
+// HINT: body-parser is hard coded in registrar.ts for now
+// @Handler("/1" /* HACK!!!!!! */)
 export class BodyParserHandler extends RequestHandler {
 
   constructor(request: any, response: any, next?: any) {
