@@ -184,7 +184,6 @@ export class RouteHandler {
     }
   }
 
-
   private processResponseHeaders(routeHandler: RouteHandler, context: RequestContext): void {
     if (routeHandler.resolvedLanguages) {
       if (routeHandler.httpVerb === HttpVerb.GET) {
