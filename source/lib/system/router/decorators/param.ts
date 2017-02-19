@@ -47,7 +47,8 @@ export function FormParam(name: string) {
 
 export function BodyParam() {
   return function (target: Object, propertyKey: string, parameterIndex: number) {
-    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.body, name);
+    // TODO: check how to get complete message body
+    processDecoratedParameter(target, propertyKey, parameterIndex, ParamType.body, "body");
   };
 }
 
